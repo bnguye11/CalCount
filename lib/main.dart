@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/panel.dart';
+import 'package:calcount/food_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,7 +60,26 @@ class _MyHomePageState extends State<MyHomePage> {
   final int _counter = 0;
   final ScrollController controller = ScrollController();
   final PanelController panelController = PanelController();
+  Food newlyAddedFood = Food(id: -1, name: "Temp", calories: 0, fat: 0,protein: 0, carb: 0);
 
+  callback(updatedFood) {
+    setState(() {
+      newlyAddedFood = updatedFood;
+    });
+  }
+
+  Text setText() {
+    Text tempText;
+    Food tempFood = newlyAddedFood;
+    
+    if (tempFood.id == -1) {
+      tempText = const Text("no new food added :(");
+    } else {
+      tempText = Text(tempFood.name);
+    }
+
+    return tempText;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text(
-                'You have pushed the button this many times:',
-              ),
+              setText(),
               Text(
                 '$_counter',
                 style: Theme.of(context).textTheme.headlineMedium,
@@ -107,6 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return Panel(
             controller: controller,
             panelController: panelController,
+            callback: callback,
           );
         },
       ), // This trailing comma makes auto-formatting nicer for build methods.

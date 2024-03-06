@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:calcount/food_model.dart';
+import 'dart:math';
+
 
 final foodName = TextEditingController();
 final calories = TextEditingController();
-
+Random random = new Random();
 //macros
 final carbs = TextEditingController();
 final protien = TextEditingController();
@@ -12,7 +15,9 @@ final fats = TextEditingController();
 class Panel extends StatelessWidget {
   final ScrollController controller;
   final PanelController panelController;
-  const Panel({Key? key, required this.controller, required this.panelController})
+  final Function callback;
+  
+  const Panel({Key? key, required this.controller, required this.panelController, required this.callback})
       : super(key: key);
 
   @override
@@ -110,11 +115,16 @@ class Panel extends StatelessWidget {
             // When the user presses the button, show an alert dialog containing
             // the text that the user has entered into the text field.
             onPressed: () {
-              print(foodName.text);
-              print(calories.text);
-              print(fats.text);
-              print(carbs.text);
-              print(protien.text);
+              //print(foodName.text);
+              //print(calories.text);
+              //print(fats.text);
+              //print(carbs.text);
+              //print(protien.text);
+              var rand = random.nextInt(100);
+              Food tempFood =  Food(id: rand, name: foodName.text, calories: int.parse(calories.text), protein: int.parse(protien.text), fat: int.parse(fats.text), carb: int.parse(carbs.text));
+              //print(rand);
+              callback(tempFood);
+              panelController.close();
             },
             tooltip: 'Show me the value!',
             child: const Icon(Icons.plus_one),
