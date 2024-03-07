@@ -9,7 +9,7 @@ final calories = TextEditingController();
 Random random = new Random();
 //macros
 final carbs = TextEditingController();
-final protien = TextEditingController();
+final protein = TextEditingController();
 final fats = TextEditingController();
 
 class Panel extends StatelessWidget {
@@ -85,7 +85,7 @@ class Panel extends StatelessWidget {
           children: <Widget>[
             Flexible(
               child: TextField(
-                controller: protien,
+                controller: protein,
                 decoration: const InputDecoration(helperText: "Est. Protein"),
               ),
             ),
@@ -119,9 +119,15 @@ class Panel extends StatelessWidget {
               //print(calories.text);
               //print(fats.text);
               //print(carbs.text);
-              //print(protien.text);
+              //print(protein.text);
               var rand = random.nextInt(100);
-              Food tempFood =  Food(id: rand, name: foodName.text, calories: int.parse(calories.text), protein: int.parse(protien.text), fat: int.parse(fats.text), carb: int.parse(carbs.text));
+              Food tempFood =  Food(
+                id: rand, 
+                name: foodName.text, 
+                calories: int.parse(calories.text), 
+                protein: int.parse(protein.text), 
+                fat: int.parse(fats.text), 
+                carb: int.parse(carbs.text));
               //print(rand);
               callback(tempFood);
               panelController.close();

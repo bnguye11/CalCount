@@ -1,9 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/panel.dart';
 import 'package:calcount/food_model.dart';
 
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -60,18 +67,29 @@ class _MyHomePageState extends State<MyHomePage> {
   final int _counter = 0;
   final ScrollController controller = ScrollController();
   final PanelController panelController = PanelController();
-  Food newlyAddedFood = Food(id: -1, name: "Temp", calories: 0, fat: 0,protein: 0, carb: 0);
+  Food newlyAddedFood =
+      Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
 
-  callback(updatedFood) {
+  callback(updatedFood) async {
     setState(() {
       newlyAddedFood = updatedFood;
     });
+
+    await DatabaseHelper.instance.add(newlyAddedFood);
+    print("added!");
+    print(newlyAddedFood.toString());
+    var beans = await DatabaseHelper.instance.getFoods();
+    print("heres what in here so far");
+    //print(beans);
+    for(var i = 0;i < beans.length; i++) {
+      print(beans[i].name);
+    }
   }
 
   Text setText() {
     Text tempText;
     Food tempFood = newlyAddedFood;
-    
+
     if (tempFood.id == -1) {
       tempText = const Text("no new food added :(");
     } else {
@@ -130,5 +148,52 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+//this could probably be moved to its own separate file but keeping it here for now
+//        'CREATE TABLE dailyFoods(id INTEGER PRIMARY KEY, name TEXT, calories INTEGER, protein INTEGER, fat INTEGER, carb INTEGER)',
+
+class DatabaseHelper {
+  DatabaseHelper._privateConstructor();
+
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+
+  static Database? _database;
+  Future<Database> get database async => _database ??= await _initDatabase();
+
+  Future<Database> _initDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'dailyFoods.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE dailyFoods(
+        id INTEGER PRIMARY KEY, 
+        name TEXT, 
+        calories INTEGER, 
+        protein INTEGER, 
+        fat INTEGER, 
+        carb INTEGER)
+      ''');
+  }
+
+  Future<List<Food>> getFoods() async {
+    Database db = await instance.database;
+    var foods = await db.query('dailyFoods', orderBy: 'name');
+    List<Food> foodList =
+        foods.isNotEmpty ? foods.map((c) => Food.fromMap(c)).toList() : [];
+    return foodList;
+  }
+
+  Future<int> add(Food food) async {
+    Database db = await instance.database;
+    return await db.insert('dailyFoods', food.toMap());
   }
 }

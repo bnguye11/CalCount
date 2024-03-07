@@ -14,4 +14,29 @@ class Food {
     required this.fat,
     required this.carb,
   });
+
+  factory Food.fromMap(Map<String, dynamic> json) => new Food(
+        id: json['id'],
+        name: json['name'],
+        calories: json['calories'],
+        protein: json['protein'],
+        fat: json['fat'],
+        carb: json['carb'],
+      );
+
+  Map<String, Object> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'calories': calories,
+      'protein': protein,
+      'fat': fat,
+      'carb': carb,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'Food{id: $id, name: $name, calories: $calories, protein: $protein, fat: $fat, carb: $carb}';
+  }
 }
