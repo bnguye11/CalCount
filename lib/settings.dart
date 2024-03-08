@@ -35,10 +35,12 @@ class Settings extends StatelessWidget{
             ListTile(
               title: const Text('Favourites'),
               onTap: () {
+                //temp remove for now
+                /*
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Favourites()),
-                );
+                );*/
               },
             ),
             ListTile(

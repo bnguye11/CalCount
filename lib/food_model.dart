@@ -1,13 +1,14 @@
 class Food {
-  final int id; //this could be optional or not even needed but keeping it in for now
+  final int?
+      id; //this could be optional or not even needed but keeping it in for now
   final String name;
   final int calories;
   final int protein;
   final int fat;
   final int carb;
 
-  const Food({
-    required this.id,
+  Food({
+    this.id,
     required this.name,
     required this.calories,
     required this.protein,
@@ -15,7 +16,7 @@ class Food {
     required this.carb,
   });
 
-  factory Food.fromMap(Map<String, dynamic> json) => new Food(
+  factory Food.fromMap(Map<String, dynamic> json) => Food(
         id: json['id'],
         name: json['name'],
         calories: json['calories'],
@@ -24,7 +25,7 @@ class Food {
         carb: json['carb'],
       );
 
-  Map<String, Object> toMap() {
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,

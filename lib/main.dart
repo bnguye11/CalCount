@@ -77,13 +77,32 @@ class _MyHomePageState extends State<MyHomePage> {
       newlyAddedFood = updatedFood;
     });
 
-    await DatabaseHelper.instance.add(newlyAddedFood);
+    await DatabaseHelper.instance.add(newlyAddedFood, 'dailyFoods');
     print("added!");
     print(newlyAddedFood.toString());
-    var beans = await DatabaseHelper.instance.getFoods();
+    var beans = await DatabaseHelper.instance.getFoods('dailyFoods');
     print("heres what in here so far");
     //print(beans);
-    for(var i = 0;i < beans.length; i++) {
+    for (var i = 0; i < beans.length; i++) {
+      print(beans[i].name);
+    }
+  }
+
+  saveFavouriteFood(food) async {
+    await DatabaseHelper.instance.add(food, 'favouriteFoods');
+    print("favoruite food added!");
+    var beans = await DatabaseHelper.instance.getFoods('favouriteFoods');
+    print("heres what in here so far");
+    for (var i = 0; i < beans.length; i++) {
+      print(beans[i].name);
+    }
+  }
+
+  removeLatest() async {
+    await DatabaseHelper.instance.removeLatest('favouriteFoods');
+    var beans = await DatabaseHelper.instance.getFoods('favouriteFoods');
+    print("heres what in here so far");
+    for (var i = 0; i < beans.length; i++) {
       print(beans[i].name);
     }
   }
@@ -116,42 +135,44 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Text('Cal Counter'),
+          child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              color: Colors.blue,
             ),
-            ListTile(
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: const Text('Favourites'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Favourites()),
-                );
-              },
-            ),
-            ListTile(
-              title: const Text('Profile'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Settings()),
-                );
-              },
-            ),
-          ],
-        )
-      ),
+            child: Text('Cal Counter'),
+          ),
+          ListTile(
+            title: const Text('Home'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Favourites'),
+            onTap: () async {
+              var favFoods =
+                  await DatabaseHelper.instance.getFoods('favouriteFoods');
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => Favourites(favouriteFoods: favFoods)),
+              );
+            },
+          ),
+          ListTile(
+            title: const Text('Profile'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const Settings()),
+              );
+            },
+          ),
+        ],
+      )),
       body: SlidingUpPanel(
         body: Center(
           child: Column(
@@ -163,6 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               FloatingActionButton(
+                heroTag: "btn1",
                 onPressed: () {
                   panelController.open();
                 },
@@ -183,6 +205,8 @@ class _MyHomePageState extends State<MyHomePage> {
             controller: controller,
             panelController: panelController,
             callback: callback,
+            saveFavourite: saveFavouriteFood,
+            removeLatest: removeLatest,
           );
         },
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -199,7 +223,11 @@ class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
 
   static Database? _database;
+  static Database? _favouriteDB;
+
   Future<Database> get database async => _database ??= await _initDatabase();
+  Future<Database> get favouriteDB async =>
+      _favouriteDB ??= await _initFavDatabase();
 
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -211,6 +239,17 @@ class DatabaseHelper {
     );
   }
 
+  Future<Database> _initFavDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'favourite.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreateFav,
+    );
+  }
+
+  //these could maybe be combined into a single function
   Future _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE dailyFoods(
@@ -223,16 +262,51 @@ class DatabaseHelper {
       ''');
   }
 
-  Future<List<Food>> getFoods() async {
-    Database db = await instance.database;
-    var foods = await db.query('dailyFoods', orderBy: 'name');
+  Future _onCreateFav(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE favouriteFoods(
+        id INTEGER PRIMARY KEY, 
+        name TEXT, 
+        calories INTEGER, 
+        protein INTEGER, 
+        fat INTEGER, 
+        carb INTEGER)
+      ''');
+  }
+
+  Future<List<Food>> getFoods(String dbName) async {
+    Database db;
+    if (dbName == "dailyFoods") {
+      db = await instance.database;
+    } else {
+      db = await instance.favouriteDB;
+    }
+
+    var foods = await db.query(dbName, orderBy: 'name');
     List<Food> foodList =
         foods.isNotEmpty ? foods.map((c) => Food.fromMap(c)).toList() : [];
     return foodList;
   }
 
-  Future<int> add(Food food) async {
-    Database db = await instance.database;
-    return await db.insert('dailyFoods', food.toMap());
+  Future<int> add(Food food, String dbName) async {
+    Database db;
+    if (dbName == "dailyFoods") {
+      db = await instance.database;
+    } else {
+      db = await instance.favouriteDB;
+    }
+    return await db.insert(dbName, food.toMap());
+  }
+
+  Future removeLatest(String dbName) async {
+    Database db;
+    if (dbName == "dailyFoods") {
+      db = await instance.database;
+    } else {
+      db = await instance.favouriteDB;
+    }
+
+    return await db.execute(
+        'DELETE FROM $dbName WHERE id = (SELECT MAX(id) FROM $dbName)');
   }
 }

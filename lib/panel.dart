@@ -1,32 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:calcount/favourites.dart';
 import 'package:calcount/food_model.dart';
 import 'dart:math';
 
-
 final foodName = TextEditingController();
 final calories = TextEditingController();
-Random random = new Random();
+
 //macros
 final carbs = TextEditingController();
 final protein = TextEditingController();
 final fats = TextEditingController();
 
-class Panel extends StatelessWidget {
+bool favouritedToggle = false;
+
+void clearTextFields() {
+  foodName.clear();
+  calories.clear();
+  carbs.clear();
+  protein.clear();
+  fats.clear();
+}
+
+class Panel extends StatefulWidget {
+  const Panel(
+      {Key? key,
+      required this.controller,
+      required this.panelController,
+      required this.callback,
+      required this.saveFavourite,
+      required this.removeLatest})
+      : super(key: key);
+
   final ScrollController controller;
   final PanelController panelController;
   final Function callback;
-  
-  const Panel({Key? key, required this.controller, required this.panelController, required this.callback})
-      : super(key: key);
+  final Function saveFavourite;
+  final Function removeLatest;
 
   @override
+  State<Panel> createState() => _PanelState();
+}
+
+class _PanelState extends State<Panel> {
+  @override
   Widget build(BuildContext context) {
-    //bool favouritedToggle = false;
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      controller: controller,
+      controller: widget.controller,
       children: <Widget>[
         const SizedBox(height: 25),
         Row(
@@ -42,24 +64,48 @@ class Panel extends StatelessWidget {
               icon: const Icon(Icons.import_contacts),
               tooltip: 'Import Favourite Item',
               onPressed: () {
-                print('Volume button clicked');
+                //removing for now
+                /*
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Favourites()),
+                );*/
               },
             ),
             const Expanded(
               child: Text(''),
             ),
             IconButton(
-              icon:  const Icon(Icons.favorite_outline),
+              //favouritedToggle ? Icons.favorite_outline : Icons.favorite
+              icon: Icon(
+                  favouritedToggle ? Icons.favorite : Icons.favorite_outline),
               tooltip: 'Favourite Item',
               onPressed: () {
-                print('Volume button clicked');
+                setState(() {
+                  favouritedToggle = !favouritedToggle;
+                });
+
+                if (favouritedToggle) {
+                  Food tempFavFood = Food(
+                      name: foodName.text,
+                      calories: int.parse(calories.text),
+                      protein: int.parse(protein.text),
+                      fat: int.parse(fats.text),
+                      carb: int.parse(carbs.text));
+
+                  widget.saveFavourite(tempFavFood);
+                  print("Tis favourited");
+                } else {
+                  print("unfavourited");
+                  widget.removeLatest();
+                }
               },
             ),
             IconButton(
               icon: const Icon(Icons.close),
               tooltip: 'Close Panel',
               onPressed: () {
-                panelController.close();
+                widget.panelController.close();
               },
             ),
           ],
@@ -112,6 +158,7 @@ class Panel extends StatelessWidget {
         Column(children: [
           const SizedBox(height: 150),
           FloatingActionButton(
+            heroTag: "btn2",
             // When the user presses the button, show an alert dialog containing
             // the text that the user has entered into the text field.
             onPressed: () {
@@ -120,17 +167,22 @@ class Panel extends StatelessWidget {
               //print(fats.text);
               //print(carbs.text);
               //print(protein.text);
-              var rand = random.nextInt(100);
-              Food tempFood =  Food(
-                id: rand, 
-                name: foodName.text, 
-                calories: int.parse(calories.text), 
-                protein: int.parse(protein.text), 
-                fat: int.parse(fats.text), 
-                carb: int.parse(carbs.text));
+
+              Food tempFood = Food(
+                  name: foodName.text,
+                  calories: int.parse(calories.text),
+                  protein: int.parse(protein.text),
+                  fat: int.parse(fats.text),
+                  carb: int.parse(carbs.text));
               //print(rand);
-              callback(tempFood);
-              panelController.close();
+              widget.callback(tempFood);
+              if (favouritedToggle) {
+                setState(() {
+                  favouritedToggle = !favouritedToggle;
+                });
+              }
+              clearTextFields();
+              widget.panelController.close();
             },
             tooltip: 'Show me the value!',
             child: const Icon(Icons.plus_one),
