@@ -26,7 +26,10 @@ class Favourites extends StatelessWidget{
             ListTile(
               title: const Text('Home'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MyHomePage(title: "Cal Counter")),
+                );
               },
             ),
             ListTile(
