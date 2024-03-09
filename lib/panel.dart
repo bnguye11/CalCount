@@ -1,35 +1,60 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/favourites.dart';
 import 'package:calcount/food_model.dart';
 import 'dart:math';
 
-final foodName = TextEditingController();
-final calories = TextEditingController();
+final foodName = TextEditingController(text: 'food');
+final calories = TextEditingController(text: '0');
 
 //macros
-final carbs = TextEditingController();
-final protein = TextEditingController();
-final fats = TextEditingController();
+final carbs = TextEditingController(text: '0');
+final protein = TextEditingController(text: '0');
+final fats = TextEditingController(text: '0');
 
 bool favouritedToggle = false;
 
+List<Food> beans = [];
+Food selectedFood =
+    Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
+
 void clearTextFields() {
-  foodName.clear();
-  calories.clear();
-  carbs.clear();
-  protein.clear();
-  fats.clear();
+  foodName.text = 'food';
+  calories.text = '0';
+  carbs.text = '0';
+  protein.text = '0';
+  fats.text = '0';
+}
+
+bool isNum(String s) {
+  if (s == null) {
+    return false;
+  }
+  return double.tryParse(s) != null;
+}
+
+bool checkValidInput() {
+  bool valid = false;
+  if (isNum(calories.text) &&
+      isNum(carbs.text) &&
+      isNum(protein.text) &&
+      isNum(fats.text)) {
+    valid = true;
+  }
+  return valid;
 }
 
 class Panel extends StatefulWidget {
-  const Panel(
+  Panel(
       {Key? key,
       required this.controller,
       required this.panelController,
       required this.callback,
       required this.saveFavourite,
-      required this.removeLatest})
+      required this.removeLatest,
+      required this.favouriteList})
       : super(key: key);
 
   final ScrollController controller;
@@ -37,14 +62,31 @@ class Panel extends StatefulWidget {
   final Function callback;
   final Function saveFavourite;
   final Function removeLatest;
+  final Function favouriteList;
 
   @override
   State<Panel> createState() => _PanelState();
 }
 
 class _PanelState extends State<Panel> {
+  void setFavouriteList() async {
+    var temp = await widget.favouriteList();
+    //print("HIIII");
+    setState(() {
+      beans = temp;
+      selectedFood = beans[0];
+    });
+  }
+
+  @override
+  initState() {
+    super.initState();
+    setFavouriteList();
+  }
+
   @override
   Widget build(BuildContext context) {
+    setFavouriteList();
     return ListView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -60,17 +102,28 @@ class _PanelState extends State<Panel> {
                 print('Volume button clicked');
               },
             ),
-            IconButton(
-              icon: const Icon(Icons.import_contacts),
-              tooltip: 'Import Favourite Item',
-              onPressed: () {
-                //removing for now
-                /*
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Favourites()),
-                );*/
+            DropdownButton<Food>(
+              value: selectedFood,
+              icon: Icon(Icons.arrow_downward),
+              iconSize: 24,
+              style: TextStyle(color: Colors.purple[700]),
+              underline: Container(
+                height: 2,
+                color: Colors.purple[700],
+              ),
+              onChanged: (Food? newFood) {
+                print("clicked");
+                print(newFood?.id);
+                foodName.text = newFood!.name;
+                calories.text = (newFood.calories).toString();
+                fats.text = (newFood.fat).toString();
+                carbs.text = (newFood.carb).toString();
+                protein.text = (newFood.protein).toString();
               },
+              items: beans.map((Food map) {
+                return DropdownMenuItem<Food>(
+                    value: map, child: Text(map.name));
+              }).toList(),
             ),
             const Expanded(
               child: Text(''),
@@ -81,23 +134,27 @@ class _PanelState extends State<Panel> {
                   favouritedToggle ? Icons.favorite : Icons.favorite_outline),
               tooltip: 'Favourite Item',
               onPressed: () {
-                setState(() {
-                  favouritedToggle = !favouritedToggle;
-                });
+                if (checkValidInput()) {
+                  setState(() {
+                    favouritedToggle = !favouritedToggle;
+                  });
 
-                if (favouritedToggle) {
-                  Food tempFavFood = Food(
-                      name: foodName.text,
-                      calories: int.parse(calories.text),
-                      protein: int.parse(protein.text),
-                      fat: int.parse(fats.text),
-                      carb: int.parse(carbs.text));
+                  if (favouritedToggle) {
+                    Food tempFavFood = Food(
+                        name: foodName.text,
+                        calories: int.parse(calories.text),
+                        protein: int.parse(protein.text),
+                        fat: int.parse(fats.text),
+                        carb: int.parse(carbs.text));
 
-                  widget.saveFavourite(tempFavFood);
-                  print("Tis favourited");
-                } else {
-                  print("unfavourited");
-                  widget.removeLatest();
+                    widget.saveFavourite(tempFavFood);
+                    print("Tis favourited");
+                  } else {
+                    print("unfavourited");
+                    widget.removeLatest();
+                  }
+                } else{
+                  print("womp womp not valid cant favourite");
                 }
               },
             ),
@@ -167,22 +224,25 @@ class _PanelState extends State<Panel> {
               //print(fats.text);
               //print(carbs.text);
               //print(protein.text);
-
-              Food tempFood = Food(
-                  name: foodName.text,
-                  calories: int.parse(calories.text),
-                  protein: int.parse(protein.text),
-                  fat: int.parse(fats.text),
-                  carb: int.parse(carbs.text));
-              //print(rand);
-              widget.callback(tempFood);
-              if (favouritedToggle) {
-                setState(() {
-                  favouritedToggle = !favouritedToggle;
-                });
+              if (checkValidInput()) {
+                Food tempFood = Food(
+                    name: foodName.text,
+                    calories: int.parse(calories.text),
+                    protein: int.parse(protein.text),
+                    fat: int.parse(fats.text),
+                    carb: int.parse(carbs.text));
+                //print(rand);
+                widget.callback(tempFood);
+                if (favouritedToggle) {
+                  setState(() {
+                    favouritedToggle = !favouritedToggle;
+                  });
+                }
+                clearTextFields();
+                widget.panelController.close();
+              } else {
+                print("womp womp not valid");
               }
-              clearTextFields();
-              widget.panelController.close();
             },
             tooltip: 'Show me the value!',
             child: const Icon(Icons.plus_one),

@@ -69,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final int _counter = 0;
   final ScrollController controller = ScrollController();
   final PanelController panelController = PanelController();
+  
   Food newlyAddedFood =
       Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
 
@@ -105,6 +106,14 @@ class _MyHomePageState extends State<MyHomePage> {
     for (var i = 0; i < beans.length; i++) {
       print(beans[i].name);
     }
+  }
+
+  getFavourite () async {
+    return await DatabaseHelper.instance.getFoods('favouriteFoods');
+  }
+
+  removeFav (id, dbName) async {
+    await DatabaseHelper.instance.remove(id, dbName);
   }
 
   Text setText() {
@@ -158,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => Favourites(favouriteFoods: favFoods)),
+                    builder: (context) => Favourites(favouriteFoods: favFoods,remove: removeFav,)),
               );
             },
           ),
@@ -207,6 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
             callback: callback,
             saveFavourite: saveFavouriteFood,
             removeLatest: removeLatest,
+            favouriteList: getFavourite,
           );
         },
       ), // This trailing comma makes auto-formatting nicer for build methods.
@@ -308,5 +318,15 @@ class DatabaseHelper {
 
     return await db.execute(
         'DELETE FROM $dbName WHERE id = (SELECT MAX(id) FROM $dbName)');
+  }
+
+  Future<int> remove(int id, String dbName) async {
+    Database db;
+    if (dbName == "dailyFoods") {
+      db = await instance.database;
+    } else {
+      db = await instance.favouriteDB;
+    }
+    return await db.delete(dbName, where: 'id = ?', whereArgs: [id]);
   }
 }

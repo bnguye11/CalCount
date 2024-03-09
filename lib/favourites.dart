@@ -6,14 +6,15 @@ import 'package:calcount/food_model.dart';
 
 class Favourites extends StatelessWidget {
   final favouriteFoods;
-
-  Favourites({Key? key, required this.favouriteFoods}) : super(key: key);
+  final Function remove;
+  Favourites({Key? key, required this.favouriteFoods, required this.remove})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    for (var i = 0; i < favouriteFoods.length; i++) {
-      print(favouriteFoods[i].name);
-    }
+    //for (var i = 0; i < favouriteFoods.length; i++) {
+    //print(favouriteFoods[i].name);
+    //}
 
     List<Widget> getGrid() {
       var items = <Widget>[];
@@ -41,13 +42,32 @@ class Favourites extends StatelessWidget {
                         favouriteFoods[i].name,
                         style: TextStyle(color: Colors.black),
                       ),
-                      Container(
-                        width: 65,
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.topRight,
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              //color: Colors.red,
+                            ),
+                            onPressed: () {
+                              print("deleted");
+                              remove(favouriteFoods[i].id, "favouriteFoods");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const MyHomePage(title: "Cal Counter")),
+                              );
+                            },
+                            iconSize: 24,
+                          ),
+                        ),
                       ),
                     ],
                   ),
                   Container(
-                    height: 65,
+                    height: 45,
                   ),
                   Text(
                     'Calories: ${(favouriteFoods[i].calories).toString()}g',
@@ -56,9 +76,9 @@ class Favourites extends StatelessWidget {
                   Row(
                     children: [
                       const Icon(
-                        Icons.punch_clock,
+                        Icons.arrow_right,
                         size: 15,
-                        color: Colors.white,
+                        color: Colors.red,
                       ),
                       Text(
                         '${(favouriteFoods[i].protein).toString()}g',
@@ -66,17 +86,17 @@ class Favourites extends StatelessWidget {
                       ),
                       Spacer(),
                       const Icon(
-                        Icons.shopping_bag,
+                        Icons.arrow_right,
                         size: 15,
-                        color: Colors.white,
+                        color: Colors.blue,
                       ),
                       Text('${(favouriteFoods[i].fat).toString()}g',
                           style: TextStyle(fontSize: 10, color: Colors.black)),
                       Spacer(),
                       const Icon(
-                        Icons.question_answer,
+                        Icons.arrow_right,
                         size: 15,
-                        color: Colors.white,
+                        color: Colors.yellow,
                       ),
                       Text('${(favouriteFoods[i].carb).toString()}g',
                           style: TextStyle(fontSize: 10, color: Colors.black))
