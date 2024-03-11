@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -24,21 +26,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cal Counter',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         canvasColor: Colors.black,
         scaffoldBackgroundColor: Colors.black,
         colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 59, 113, 254)),
@@ -58,12 +45,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final int _counter = 0;
   final ScrollController controller = ScrollController();
   final PanelController panelController = PanelController();
   
-  Food newlyAddedFood =
-      Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
+  Food newlyAddedFood = Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
 
   callback(updatedFood) async {
     setState(() {
@@ -100,6 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  getDaily () async {
+    var dailyList = await DatabaseHelper.instance.getFoods('dailyFoods');
+    return dailyList;
+  }
+
   getFavourite () async {
     return await DatabaseHelper.instance.getFoods('favouriteFoods');
   }
@@ -115,14 +105,28 @@ class _MyHomePageState extends State<MyHomePage> {
     if (tempFood.id == -1) {
       tempText = const Text("no new food added :(", style: TextStyle(color: Colors.white),);
     } else {
-      tempText = Text(tempFood.name, style: TextStyle(color: Colors.white),);
+      tempText = Text("${tempFood.name} added", style: TextStyle(color: Colors.white),);
     }
 
     return tempText;
   }
 
+  Future <List<int>> getTotals() async{
+    List<int> totals = [0, 0, 0, 0];
+    var daily = await DatabaseHelper.instance.getFoods('dailyFoods');
+    for(var i = 0; i < daily.length; i++){
+      totals[0] += daily[i].calories;
+      totals[1] += daily[i].protein;
+      totals[2] += daily[i].fat;
+      totals[3] += daily[i].carb;
+      print(totals);
+    }
+    return totals;
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
+    var totals = getTotals();
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.8;
     return Scaffold(
       appBar: AppBar(
@@ -134,66 +138,152 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Container(
           color: Color.fromARGB(200, 0, 0, 0),
           child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 59, 113, 254),
-              ),
-              child: Text(
-                'Cal Counter',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 50,
+            padding: EdgeInsets.zero,
+            children: [
+              const DrawerHeader(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(255, 59, 113, 254),
+                ),
+                child: Text(
+                  'Cal Counter',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 50,
+                  ),
                 ),
               ),
-            ),
-            ListTile(
-              textColor: Colors.white,
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              textColor: Colors.white,
-              title: const Text('Favourites'),
-              onTap: () async {
-                var favFoods =
-                    await DatabaseHelper.instance.getFoods('favouriteFoods');
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => Favourites(favouriteFoods: favFoods,remove: removeFav,)),
-                );
-              },
-            ),
-            ListTile(
-              textColor: Colors.white,
-              title: const Text('Profile'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Settings()),
-                );
-              },
-            ),
-          ],
-                ),
-        )),
-      body: SlidingUpPanel(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              setText(),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headlineMedium,
+              ListTile(
+                textColor: Colors.white,
+                title: const Text('Home'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
-              
+              ListTile(
+                textColor: Colors.white,
+                title: const Text('Favourites'),
+                onTap: () async {
+                  var favFoods = await DatabaseHelper.instance.getFoods('favouriteFoods');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Favourites(favouriteFoods: favFoods,remove: removeFav,)
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                textColor: Colors.white,
+                title: const Text('Profile'),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Settings()),
+                  );
+                },
+              ),
             ],
           ),
+        ),
+      ),
+      body: SlidingUpPanel(
+        body: ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.fromLTRB(0, 30, 0, 100),
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text(
+                  " - Overview -",
+                  style: TextStyle(fontSize: 30, color:Colors.white),
+                ),
+                FutureBuilder <List<int>>(
+                  future: getTotals(), 
+                  builder: (context, snapshot){
+                    if(snapshot.hasData && snapshot.connectionState == ConnectionState.done){
+                      if(snapshot.data != null){
+                        return Column(
+                          children: [
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image(
+                                  height: 200,
+                                  image: AssetImage("assets/images/calCircle.png"),
+                                ),
+                                Column(
+                                  children: [
+                                    Text("Calories", style: TextStyle(fontSize: 15, color:Colors.white)),
+                                    Text("${snapshot.data?[0]} kcal", style: TextStyle(fontSize: 35, color:Colors.white)),
+                                  ],
+                                )
+                              ]
+                            ),
+                            Container(height: 25),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image(
+                                  height: 200,
+                                  image: AssetImage("assets/images/proteinCircle.png"),
+                                ),
+                                Column(
+                                  children: [
+                                    Text("Protein", style: TextStyle(fontSize: 15, color:Colors.white, )),
+                                    Text("${snapshot.data?[1]} g", style: TextStyle(fontSize: 35, color:Colors.white)),
+                                  ],
+                                )
+
+                              ]
+                            ),
+                            Container(height: 25),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image(
+                                  height: 200,
+                                  image: AssetImage("assets/images/fatCircle.png"),
+                                ),
+                                Column(
+                                  children: [
+                                    Text("Fats", style: TextStyle(fontSize: 15, color:Colors.white, )),
+                                    Text("${snapshot.data?[2]} g", style: TextStyle(fontSize: 35, color:Colors.white)),
+                                  ],
+                                )
+                              ]
+                            ),
+                            Container(height: 25),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image(
+                                  height: 200,
+                                  image: AssetImage("assets/images/carbCircle.png"),
+                                ),
+                                Column(
+                                  children: [
+                                    Text("Carbs", style: TextStyle(fontSize: 15, color:Colors.white, )),
+                                    Text("${snapshot.data?[3]} g", style: TextStyle(fontSize: 35, color:Colors.white)),
+                                  ],
+                                )
+                              ]
+                            ),
+                          ]
+                        );
+                      }
+                    }
+                    return Text("Nothing", style: TextStyle(fontSize: 30, color:Colors.white));
+                  }
+                ),
+                Text(
+                  " - History -",
+                  style: TextStyle(fontSize: 30, color:Colors.white),
+                ),
+                setText(),
+              ],
+            ),
+          ],
         ),
         controller: panelController,
         maxHeight: panelHeightOpen,
@@ -219,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
           panelController.open();
         },
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
