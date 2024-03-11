@@ -221,59 +221,61 @@ class _MyHomePageState extends State<MyHomePage> {
                               ]
                             ),
                             Container(height: 25),
-                            Stack(
-                              alignment: Alignment.center,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                Image(
-                                  height: 200,
-                                  image: AssetImage("assets/images/proteinCircle.png"),
-                                ),
-                                Column(
+                                Stack(
+                                  alignment: Alignment.center,
                                   children: [
-                                    Text("Protein", style: TextStyle(fontSize: 15, color:Colors.white, )),
-                                    Text("${snapshot.data?[1]} g", style: TextStyle(fontSize: 35, color:Colors.white)),
+                                    Image(
+                                      height: 80,
+                                      image: AssetImage("assets/images/proteinCircle.png"),
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text("Protein", style: TextStyle(fontSize: 10, color:Colors.white, )),
+                                        Text("${snapshot.data?[1]} g", style: TextStyle(fontSize: 15, color:Colors.white)),
+                                      ],
+                                    ),
                                   ],
-                                )
-
-                              ]
-                            ),
-                            Container(height: 25),
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image(
-                                  height: 200,
-                                  image: AssetImage("assets/images/fatCircle.png"),
                                 ),
-                                Column(
+                                Stack(
+                                  alignment: Alignment.center,
                                   children: [
-                                    Text("Fats", style: TextStyle(fontSize: 15, color:Colors.white, )),
-                                    Text("${snapshot.data?[2]} g", style: TextStyle(fontSize: 35, color:Colors.white)),
+                                    Image(
+                                      height: 80,
+                                      image: AssetImage("assets/images/fatCircle.png"),
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text("Fats", style: TextStyle(fontSize: 10, color:Colors.white, )),
+                                        Text("${snapshot.data?[2]} g", style: TextStyle(fontSize: 15, color:Colors.white)),
+                                      ],
+                                    ),
                                   ],
-                                )
-                              ]
-                            ),
-                            Container(height: 25),
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Image(
-                                  height: 200,
-                                  image: AssetImage("assets/images/carbCircle.png"),
                                 ),
-                                Column(
+                                Stack(
+                                  alignment: Alignment.center,
                                   children: [
-                                    Text("Carbs", style: TextStyle(fontSize: 15, color:Colors.white, )),
-                                    Text("${snapshot.data?[3]} g", style: TextStyle(fontSize: 35, color:Colors.white)),
+                                    Image(
+                                      height: 80,
+                                      image: AssetImage("assets/images/carbCircle.png"),
+                                    ),
+                                    Column(
+                                      children: [
+                                        Text("Carbs", style: TextStyle(fontSize: 10, color:Colors.white, )),
+                                        Text("${snapshot.data?[3]} g", style: TextStyle(fontSize: 15, color:Colors.white)),
+                                      ],
+                                    ),
                                   ],
-                                )
-                              ]
+                                ),
+                              ],
                             ),
-                          ]
+                          ],
                         );
                       }
                     }
-                    return Text("Nothing", style: TextStyle(fontSize: 30, color:Colors.white));
+                    return Text("If you see this, something broke", style: TextStyle(fontSize: 30, color:Colors.white));
                   }
                 ),
                 Text(
