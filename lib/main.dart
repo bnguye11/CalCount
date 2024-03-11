@@ -191,13 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 '$_counter',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              FloatingActionButton(
-                heroTag: "btn1",
-                onPressed: () {
-                  panelController.open();
-                },
-                child: const Icon(Icons.add),
-              ),
+              
             ],
           ),
         ),
@@ -218,6 +212,13 @@ class _MyHomePageState extends State<MyHomePage> {
             favouriteList: getFavourite,
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: "btn1",
+        onPressed: () {
+          panelController.open();
+        },
+        child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
