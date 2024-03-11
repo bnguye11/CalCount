@@ -2,7 +2,9 @@
 
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/panel.dart';
 import 'package:calcount/food_model.dart';
@@ -26,7 +28,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Cal Counter',
       theme: ThemeData(
-        canvasColor: Colors.black,
         scaffoldBackgroundColor: Colors.black,
         colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 59, 113, 254)),
         useMaterial3: true,
@@ -278,6 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Text("If you see this, something broke", style: TextStyle(fontSize: 30, color:Colors.white));
                   }
                 ),
+                Container(height: 30,),
                 Text(
                   " - History -",
                   style: TextStyle(fontSize: 30, color:Colors.white),
