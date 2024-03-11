@@ -189,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SlidingUpPanel(
         body: ListView(
           shrinkWrap: true,
-          padding: EdgeInsets.fromLTRB(0, 30, 0, 100),
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 100),
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
