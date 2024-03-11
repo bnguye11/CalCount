@@ -86,9 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  getDaily () async {
-    var dailyList = await DatabaseHelper.instance.getFoods('dailyFoods');
-    return dailyList;
+  Future <List<Food>> getDaily () async {
+    return await DatabaseHelper.instance.getFoods('dailyFoods');
   }
 
   getFavourite () async {
@@ -127,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context){
-    var totals = getTotals();
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.8;
     return Scaffold(
       appBar: AppBar(
@@ -280,10 +278,35 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 ),
                 Container(height: 30,),
+                FloatingActionButton.extended(
+                  label: Text("Add Food"),
+                  heroTag: "btn1",
+                  onPressed: () {
+                    panelController.open();
+                  },
+                  // child: const Icon(Icons.add),
+                ),
+                Container(height: 30,),
                 Text(
                   " - History -",
                   style: TextStyle(fontSize: 30, color:Colors.white),
                 ),
+                // FutureBuilder <List<Food>>(
+                //   future: getDaily(), 
+                //   builder: (context, snapshot){
+                //     if(snapshot.hasData && snapshot.connectionState == ConnectionState.done){
+                //       print("Length: $snapshot.data!.length");
+                //       for(var k = 0; k < snapshot.data!.length; k++){
+                //         return ListView(
+                //           children: [ 
+                //             Text("${k+1}: ${snapshot.data![k].name}", style: TextStyle(color: Colors.white),),
+                //           ],
+                //         );
+                //       }
+                //     }
+                //     return Text("Something Broke");
+                //   }
+                // ),
                 setText(),
               ],
             ),
@@ -307,13 +330,13 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: "btn1",
-        onPressed: () {
-          panelController.open();
-        },
-        child: const Icon(Icons.add),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   heroTag: "btn1",
+      //   onPressed: () {
+      //     panelController.open();
+      //   },
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }
