@@ -114,8 +114,9 @@ class Favourites extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Favourites"),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: const Text("Favourites", style: TextStyle(color: Colors.white)),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
           child: SizedBox(
@@ -129,41 +130,55 @@ class Favourites extends StatelessWidget {
             children: getGrid()),
       )),
       drawer: Drawer(
+        child: Container(
+          color: Color.fromARGB(200, 0, 0, 0),
           child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+            padding: EdgeInsets.zero,
+            children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 59, 113, 254),
+              ),
+              child: Text(
+                'Cal Counter',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 50,
+                ),
+              ),
             ),
-            child: Text('Cal Counter'),
-          ),
-          ListTile(
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        const MyHomePage(title: "Cal Counter")),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('Favourites'),
-            onTap: () {},
-          ),
-          ListTile(
-            title: const Text('Profile'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Settings()),
-              );
-            },
-          ),
-        ],
-      )),
+            ListTile(
+              textColor: Colors.white,
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const MyHomePage(title: "Cal Counter")),
+                );
+              },
+            ),
+            ListTile(
+              textColor: Colors.white,
+              title: const Text('Favourites'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              textColor: Colors.white,
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Settings()),
+                );
+              },
+            ),
+          ],
+                ),
+        )),
     );
   }
 }

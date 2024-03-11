@@ -39,7 +39,9 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        canvasColor: Colors.black,
+        scaffoldBackgroundColor: Colors.black,
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 59, 113, 254)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Cal Counter'),
@@ -49,16 +51,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -121,9 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
     Food tempFood = newlyAddedFood;
 
     if (tempFood.id == -1) {
-      tempText = const Text("no new food added :(");
+      tempText = const Text("no new food added :(", style: TextStyle(color: Colors.white),);
     } else {
-      tempText = Text(tempFood.name);
+      tempText = Text(tempFood.name, style: TextStyle(color: Colors.white),);
     }
 
     return tempText;
@@ -131,57 +123,64 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.8;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(widget.title, style: TextStyle(color: Colors.white),),
+        iconTheme: IconThemeData(color: Colors.white),
       ),
       drawer: Drawer(
+        child: Container(
+          color: Color.fromARGB(200, 0, 0, 0),
           child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              color: Colors.blue,
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color.fromARGB(255, 59, 113, 254),
+              ),
+              child: Text(
+                'Cal Counter',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 50,
+                ),
+              ),
             ),
-            child: Text('Cal Counter'),
-          ),
-          ListTile(
-            title: const Text('Home'),
-            onTap: () {
-              Navigator.pop(context);
-            },
-          ),
-          ListTile(
-            title: const Text('Favourites'),
-            onTap: () async {
-              var favFoods =
-                  await DatabaseHelper.instance.getFoods('favouriteFoods');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => Favourites(favouriteFoods: favFoods,remove: removeFav,)),
-              );
-            },
-          ),
-          ListTile(
-            title: const Text('Profile'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const Settings()),
-              );
-            },
-          ),
-        ],
-      )),
+            ListTile(
+              textColor: Colors.white,
+              title: const Text('Home'),
+              onTap: () {
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              textColor: Colors.white,
+              title: const Text('Favourites'),
+              onTap: () async {
+                var favFoods =
+                    await DatabaseHelper.instance.getFoods('favouriteFoods');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => Favourites(favouriteFoods: favFoods,remove: removeFav,)),
+                );
+              },
+            ),
+            ListTile(
+              textColor: Colors.white,
+              title: const Text('Profile'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Settings()),
+                );
+              },
+            ),
+          ],
+                ),
+        )),
       body: SlidingUpPanel(
         body: Center(
           child: Column(
@@ -234,10 +233,11 @@ class DatabaseHelper {
 
   static Database? _database;
   static Database? _favouriteDB;
+  static Database? _profileDB;
 
   Future<Database> get database async => _database ??= await _initDatabase();
-  Future<Database> get favouriteDB async =>
-      _favouriteDB ??= await _initFavDatabase();
+  Future<Database> get favouriteDB async => _favouriteDB ??= await _initFavDatabase();
+  Future<Database> get profileDB async => _profileDB ??= await _initProfileDatabase();
 
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -256,6 +256,16 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: _onCreateFav,
+    );
+  }
+
+  Future<Database> _initProfileDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'profile.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreateProfile,
     );
   }
 
@@ -281,6 +291,18 @@ class DatabaseHelper {
         protein INTEGER, 
         fat INTEGER, 
         carb INTEGER)
+      ''');
+  }
+
+  Future _onCreateProfile(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE favouriteFoods(
+        id INTEGER PRIMARY KEY, 
+        name TEXT, 
+        age INTEGER, 
+        gender TEXT, 
+        weight REAL, 
+        height REAL)
       ''');
   }
 

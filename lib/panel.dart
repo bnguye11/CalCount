@@ -106,7 +106,7 @@ class _PanelState extends State<Panel> {
               value: selectedFood,
               icon: Icon(Icons.arrow_downward),
               iconSize: 24,
-              style: TextStyle(color: Colors.purple[700]),
+              style: TextStyle(color: const Color.fromARGB(255, 8, 6, 8)),
               underline: Container(
                 height: 2,
                 color: Colors.purple[700],
