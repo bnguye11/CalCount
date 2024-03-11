@@ -274,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         );
                       }
                     }
-                    return Text("If you see this, something broke", style: TextStyle(fontSize: 30, color:Colors.white));
+                    return CircularProgressIndicator();
                   }
                 ),
                 Container(height: 30,),
@@ -291,22 +291,34 @@ class _MyHomePageState extends State<MyHomePage> {
                   " - History -",
                   style: TextStyle(fontSize: 30, color:Colors.white),
                 ),
-                // FutureBuilder <List<Food>>(
-                //   future: getDaily(), 
-                //   builder: (context, snapshot){
-                //     if(snapshot.hasData && snapshot.connectionState == ConnectionState.done){
-                //       print("Length: $snapshot.data!.length");
-                //       for(var k = 0; k < snapshot.data!.length; k++){
-                //         return ListView(
-                //           children: [ 
-                //             Text("${k+1}: ${snapshot.data![k].name}", style: TextStyle(color: Colors.white),),
-                //           ],
-                //         );
-                //       }
-                //     }
-                //     return Text("Something Broke");
-                //   }
-                // ),
+                FutureBuilder <List<Food>>(
+                  future: getDaily(), 
+                  builder: (context, ssDaily){
+                    if(ssDaily.hasData && ssDaily.connectionState == ConnectionState.done){
+                      print(ssDaily.data);
+                      return Container(
+                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: ClampingScrollPhysics(),
+                          itemCount: ssDaily.data!.length,
+                          itemBuilder: (context, index){
+                            Food currentFood = ssDaily.data![index];
+                            return Align(
+                              alignment: Alignment.center,
+                              child: Text(
+                                "${currentFood.name} - cal: ${currentFood.calories}kcal / P:${currentFood.protein}g / F:${currentFood.fat}g / C:${currentFood.carb}g", 
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  }
+                ),
                 setText(),
               ],
             ),
