@@ -77,7 +77,6 @@ class _PanelState extends State<Panel> {
   bool _showTextOcr = true;
   Size? _previewOcr;
   List<OcrText> _textsOcr = [];
-  List<String> relevantTexts = [];
 
   void setFavouriteList() async {
     var temp = await widget.favouriteList();
@@ -89,11 +88,16 @@ class _PanelState extends State<Panel> {
   }
 
   void checkRelevant() {
-    var tempArr = _textsOcr[0].value.split(' ');
+    
+    var tempArr = _textsOcr[0].value.replaceAll(RegExp(r'\n'),'').split(' ');
     var tempValue = "";
-    print("test\nbeans");
+
+    print("Called");
+    
     //this probably needs to be simpliifed and maybe made into a switch case
     for (int i = 0; i < tempArr.length; i++) {
+      print("checking!");
+      print(tempArr[i]);
       //Lets text if its atlest 70% similiar for now
       if ((tempArr[i]).toLowerCase().similarityTo('calories') > 0.70) {
         if ((i + 1) < tempArr.length) {
@@ -117,9 +121,9 @@ class _PanelState extends State<Panel> {
           print("HERE IS protein");
           print(tempValue);
           protein.text = tempValue;
-        } // need to account for french
-      } else if ((tempArr[i]).toLowerCase().similarityTo('fat') > 0.70 ||
-          (tempArr[i]).toLowerCase().similarityTo('lipides') > 0.70) {
+        } // need to account for french make it slightly easer to pass since it seems to pass through the radars alot
+      } else if ((tempArr[i]).toLowerCase().similarityTo('fat') > 0.60 ||
+          (tempArr[i]).toLowerCase().similarityTo('lipides') > 0.60) {
         if ((i + 1) < tempArr.length) {
           tempValue = tempArr[(i + 1)];
           print("HERE IS BEFORE");
@@ -145,21 +149,6 @@ class _PanelState extends State<Panel> {
         }
       }
     }
-    /*
-      
-      print("here is value");
-      print(_textsOcr[i].value);
-      //for now we are going to check if the first element in the string is comparable to the keywords we are looking for
-      //Lets text if its atlest 70 similiar for now
-      print("here is tempArr[0]");
-      print(tempArr[0]);
-      if((tempArr[0]).toLowerCase().similarityTo('calories') > 0.70) {
-        relevantTexts.add(_textsOcr[i].value);
-        print("RELEVANT");
-      } else {
-        print("Nope");
-      }*/
-    //print(_textsOcr[i].value);
   }
 
   @override
