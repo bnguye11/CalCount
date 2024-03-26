@@ -1,18 +1,18 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/favourites.dart';
 import 'package:calcount/food_model.dart';
 import 'dart:math';
+import 'package:flutter_mobile_vision_2/flutter_mobile_vision_2.dart';
+import 'package:string_similarity/string_similarity.dart';
 
-final foodName = TextEditingController(text: 'food');
-final calories = TextEditingController(text: '0');
+final foodName = TextEditingController();
+final calories = TextEditingController();
 
 //macros
-final carbs = TextEditingController(text: '0');
-final protein = TextEditingController(text: '0');
-final fats = TextEditingController(text: '0');
+final carbs = TextEditingController();
+final protein = TextEditingController();
+final fats = TextEditingController();
 
 bool favouritedToggle = false;
 
@@ -21,11 +21,11 @@ Food selectedFood =
     Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
 
 void clearTextFields() {
-  foodName.text = 'food';
-  calories.text = '0';
-  carbs.text = '0';
-  protein.text = '0';
-  fats.text = '0';
+  foodName.text = '';
+  calories.text = '';
+  carbs.text = '';
+  protein.text = '';
+  fats.text = '';
 }
 
 bool isNum(String s) {
@@ -69,6 +69,16 @@ class Panel extends StatefulWidget {
 }
 
 class _PanelState extends State<Panel> {
+  int? _cameraOcr = FlutterMobileVision.CAMERA_BACK;
+  bool _autoFocusOcr = true;
+  bool _torchOcr = false;
+  bool _multipleOcr = false;
+  bool _waitTapOcr = false;
+  bool _showTextOcr = true;
+  Size? _previewOcr;
+  List<OcrText> _textsOcr = [];
+  List<String> relevantTexts = [];
+
   void setFavouriteList() async {
     var temp = await widget.favouriteList();
     //print("HIIII");
@@ -78,10 +88,87 @@ class _PanelState extends State<Panel> {
     });
   }
 
+  void checkRelevant() {
+    var tempArr = _textsOcr[0].value.split(' ');
+    var tempValue = "";
+    print("test\nbeans");
+    //this probably needs to be simpliifed and maybe made into a switch case
+    for (int i = 0; i < tempArr.length; i++) {
+      //Lets text if its atlest 70% similiar for now
+      if ((tempArr[i]).toLowerCase().similarityTo('calories') > 0.70) {
+        if ((i + 1) < tempArr.length) {
+          tempValue = tempArr[(i + 1)];
+          print("HERE IS BEFORE");
+          print(tempValue);
+          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
+          
+          tempValue = tempValue.replaceAll(new RegExp(r'[^\d\n]+'), '').trim();
+          print("HERE IS CALORIES");
+          print(tempValue);
+          calories.text = tempValue;
+        }
+      } else if ((tempArr[i]).toLowerCase().similarityTo('protein') > 0.70) {
+        if ((i + 1) < tempArr.length) {
+          tempValue = tempArr[(i + 1)];
+          print("HERE IS BEFORE");
+          print(tempValue);
+          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
+          tempValue = tempValue.replaceAll(RegExp(r'[^\d\n]+'), '').trim();
+          print("HERE IS protein");
+          print(tempValue);
+          protein.text = tempValue;
+        } // need to account for french
+      } else if ((tempArr[i]).toLowerCase().similarityTo('fat') > 0.70 ||
+          (tempArr[i]).toLowerCase().similarityTo('lipides') > 0.70) {
+        if ((i + 1) < tempArr.length) {
+          tempValue = tempArr[(i + 1)];
+          print("HERE IS BEFORE");
+          print(tempValue);
+          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
+          tempValue = tempValue.replaceAll(RegExp(r'[^\d\n]+'), '').trim();
+          print("HERE IS fats");
+          print(tempValue);
+          fats.text = tempValue;
+        } // parle on francais
+      } else if ((tempArr[i]).toLowerCase().similarityTo('carbohydrate') >
+              0.70 ||
+          (tempArr[i]).toLowerCase().similarityTo('glucides') > 0.70) {
+        if ((i + 1) < tempArr.length) {
+          tempValue = tempArr[(i + 1)];
+          print("HERE IS BEFORE");
+          print(tempValue);
+          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
+          tempValue = tempValue.replaceAll(RegExp(r'[^\d\n]+'), '').trim();
+          print("HERE IS carbs");
+          print(tempValue);
+          carbs.text = tempValue;
+        }
+      }
+    }
+    /*
+      
+      print("here is value");
+      print(_textsOcr[i].value);
+      //for now we are going to check if the first element in the string is comparable to the keywords we are looking for
+      //Lets text if its atlest 70 similiar for now
+      print("here is tempArr[0]");
+      print(tempArr[0]);
+      if((tempArr[0]).toLowerCase().similarityTo('calories') > 0.70) {
+        relevantTexts.add(_textsOcr[i].value);
+        print("RELEVANT");
+      } else {
+        print("Nope");
+      }*/
+    //print(_textsOcr[i].value);
+  }
+
   @override
   initState() {
     super.initState();
     setFavouriteList();
+    FlutterMobileVision.start().then((previewSizes) => setState(() {
+          _previewOcr = previewSizes[_cameraOcr]!.first;
+        }));
   }
 
   @override
@@ -96,10 +183,51 @@ class _PanelState extends State<Panel> {
         Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.camera_alt),
+              icon: const Icon(Icons.add_a_photo),
               tooltip: 'Scan Nutritional Value',
-              onPressed: () {
-                print('Volume button clicked');
+              onPressed: () async {
+                List<OcrText> texts = [];
+                List<String> values = [];
+                Size _scanpreviewOcr =
+                    _previewOcr ?? FlutterMobileVision.PREVIEW;
+                try {
+                  texts = await FlutterMobileVision.read(
+                    flash: _torchOcr,
+                    autoFocus: _autoFocusOcr,
+                    multiple: _multipleOcr,
+                    //makes it so image is clickable
+                    waitTap: true,
+                    //OPTIONAL: close camera after tap, even if there are no detection.
+                    //Camera would usually stay on, until there is a valid detection
+                    forceCloseCameraOnTap: true,
+                    //OPTIONAL: path to save image to. leave empty if you do not want to save the image
+                    //imagePath: '', //'path/to/file.jpg'
+                    showText: _showTextOcr,
+                    preview: _previewOcr ?? FlutterMobileVision.PREVIEW,
+                    scanArea: Size(_scanpreviewOcr.width - 10,
+                        _scanpreviewOcr.height - 10),
+                    camera: _cameraOcr ?? FlutterMobileVision.CAMERA_BACK,
+                    fps: 2.0,
+                  );
+                  //texts.forEach((val) {
+                  //  values.add(val.value.toString());
+                  //});
+                  if (!mounted) return;
+                  //setState(() => _textsOcr = texts);
+                } on Exception {
+                  texts.add(OcrText('Failed to recognize text.'));
+                }
+
+                if (!mounted) return;
+
+                setState(() => _textsOcr = texts);
+
+                if (_textsOcr[0].value != 'Failed to recognize text.') {
+                  checkRelevant();
+                }
+                print("HERE IS RELEVANT TEXT FOUND");
+
+                print(_textsOcr[0].value);
               },
             ),
             DropdownButton<Food>(
@@ -153,7 +281,7 @@ class _PanelState extends State<Panel> {
                     print("unfavourited");
                     widget.removeLatest();
                   }
-                } else{
+                } else {
                   print("womp womp not valid cant favourite");
                 }
               },
@@ -171,14 +299,16 @@ class _PanelState extends State<Panel> {
           padding: const EdgeInsets.all(16),
           child: TextField(
             controller: foodName,
-            decoration: const InputDecoration(helperText: 'Food Name'),
+            decoration: const InputDecoration(
+                helperText: 'Food Name', hintText: 'Food'),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(16),
           child: TextField(
             controller: calories,
-            decoration: const InputDecoration(helperText: 'Calories'),
+            decoration:
+                const InputDecoration(helperText: 'Calories', hintText: '0'),
           ),
         ),
         const Center(
@@ -189,7 +319,8 @@ class _PanelState extends State<Panel> {
             Flexible(
               child: TextField(
                 controller: protein,
-                decoration: const InputDecoration(helperText: "Est. Protein"),
+                decoration: const InputDecoration(
+                    helperText: "Est. Protein", hintText: '0'),
               ),
             ),
             const SizedBox(
@@ -198,7 +329,8 @@ class _PanelState extends State<Panel> {
             Flexible(
               child: TextField(
                 controller: fats,
-                decoration: const InputDecoration(helperText: "Est. Fats"),
+                decoration: const InputDecoration(
+                    helperText: "Est. Fats", hintText: '0'),
               ),
             ),
             const SizedBox(
@@ -207,7 +339,8 @@ class _PanelState extends State<Panel> {
             Flexible(
               child: TextField(
                 controller: carbs,
-                decoration: const InputDecoration(helperText: "Est. Carbs"),
+                decoration: const InputDecoration(
+                    helperText: "Est. Carbs", hintText: '0'),
               ),
             ),
           ],
@@ -245,7 +378,7 @@ class _PanelState extends State<Panel> {
               }
             },
             tooltip: 'Show me the value!',
-            child: const Icon(Icons.plus_one),
+            child: const Icon(Icons.add),
           ),
         ]),
       ],

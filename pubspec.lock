@@ -78,6 +78,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
+  flutter_mobile_vision_2:
+    dependency: "direct main"
+    description:
+      name: flutter_mobile_vision_2
+      sha256: "06fc4e9a078c21cbd422fd32f8d85b9069fe376668ea76144d883f7fdb89f5e6"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.15"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -288,6 +296,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  string_similarity:
+    dependency: "direct main"
+    description:
+      name: string_similarity
+      sha256: "5219d2ca048f6d3b8954747644b99b103244b5f84ef62b2577d29eb6bdeb61bb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   synchronized:
     dependency: transitive
     description:
