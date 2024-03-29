@@ -42,6 +42,7 @@ dependencies:
   path_provider: ^2.1.2
   flutter_mobile_vision_2: ^0.1.15
   string_similarity: ^2.0.0
+  cron: ^0.6.0
 
 dev_dependencies:
   flutter_test:

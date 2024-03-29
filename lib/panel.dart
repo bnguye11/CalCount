@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:calcount/favourites.dart';
 import 'package:calcount/food_model.dart';
-import 'dart:math';
 import 'package:flutter_mobile_vision_2/flutter_mobile_vision_2.dart';
 import 'package:string_similarity/string_similarity.dart';
 
@@ -88,12 +86,11 @@ class _PanelState extends State<Panel> {
   }
 
   void checkRelevant() {
-    
-    var tempArr = _textsOcr[0].value.replaceAll(RegExp(r'\n'),'').split(' ');
+    var tempArr = _textsOcr[0].value.replaceAll(RegExp(r'\n'), '').split(' ');
     var tempValue = "";
 
     print("Called");
-    
+
     //this probably needs to be simpliifed and maybe made into a switch case
     for (int i = 0; i < tempArr.length; i++) {
       print("checking!");
@@ -105,7 +102,7 @@ class _PanelState extends State<Panel> {
           print("HERE IS BEFORE");
           print(tempValue);
           //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
-          
+
           tempValue = tempValue.replaceAll(new RegExp(r'[^\d\n]+'), '').trim();
           print("HERE IS CALORIES");
           print(tempValue);
@@ -176,7 +173,7 @@ class _PanelState extends State<Panel> {
               tooltip: 'Scan Nutritional Value',
               onPressed: () async {
                 List<OcrText> texts = [];
-                List<String> values = [];
+                //List<String> values = [];
                 Size _scanpreviewOcr =
                     _previewOcr ?? FlutterMobileVision.PREVIEW;
                 try {
@@ -221,9 +218,9 @@ class _PanelState extends State<Panel> {
             ),
             DropdownButton<Food>(
               value: selectedFood,
-              icon: Icon(Icons.arrow_downward),
+              icon: const Icon(Icons.arrow_downward),
               iconSize: 24,
-              style: TextStyle(color: const Color.fromARGB(255, 8, 6, 8)),
+              style: const TextStyle(color: Color.fromARGB(255, 8, 6, 8)),
               underline: Container(
                 height: 2,
                 color: Colors.purple[700],
@@ -288,16 +285,25 @@ class _PanelState extends State<Panel> {
           padding: const EdgeInsets.all(16),
           child: TextField(
             controller: foodName,
-            decoration: const InputDecoration(
-                helperText: 'Food Name', hintText: 'Food'),
+            decoration: InputDecoration(
+                suffixIcon: IconButton(
+                    onPressed: foodName.clear, icon: const Icon(Icons.clear)),
+                helperText: 'Food Name',
+                hintText: 'Food',
+                hintStyle: const TextStyle(color: Colors.grey)),
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(16),
           child: TextField(
+            keyboardType: TextInputType.number,
             controller: calories,
-            decoration:
-                const InputDecoration(helperText: 'Calories', hintText: '0'),
+            decoration: InputDecoration(
+                suffixIcon: IconButton(
+                    onPressed: calories.clear, icon: const Icon(Icons.clear)),
+                helperText: 'Calories',
+                hintText: '0',
+                hintStyle: TextStyle(color: Colors.grey)),
           ),
         ),
         const Center(
@@ -307,9 +313,15 @@ class _PanelState extends State<Panel> {
           children: <Widget>[
             Flexible(
               child: TextField(
+                keyboardType: TextInputType.number,
                 controller: protein,
-                decoration: const InputDecoration(
-                    helperText: "Est. Protein", hintText: '0'),
+                decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                        onPressed: protein.clear,
+                        icon: const Icon(Icons.clear)),
+                    helperText: "Est. Protein",
+                    hintText: '0',
+                    hintStyle: TextStyle(color: Colors.grey)),
               ),
             ),
             const SizedBox(
@@ -317,9 +329,14 @@ class _PanelState extends State<Panel> {
             ),
             Flexible(
               child: TextField(
+                keyboardType: TextInputType.number,
                 controller: fats,
-                decoration: const InputDecoration(
-                    helperText: "Est. Fats", hintText: '0'),
+                decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                        onPressed: fats.clear, icon: const Icon(Icons.clear)),
+                    helperText: "Est. Fats",
+                    hintText: '0',
+                    hintStyle: const TextStyle(color: Colors.grey)),
               ),
             ),
             const SizedBox(
@@ -327,9 +344,14 @@ class _PanelState extends State<Panel> {
             ),
             Flexible(
               child: TextField(
+                keyboardType: TextInputType.number,
                 controller: carbs,
-                decoration: const InputDecoration(
-                    helperText: "Est. Carbs", hintText: '0'),
+                decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                        onPressed: carbs.clear, icon: const Icon(Icons.clear)),
+                    helperText: "Est. Carbs",
+                    hintText: '0',
+                    hintStyle: const TextStyle(color: Colors.grey)),
               ),
             ),
           ],
