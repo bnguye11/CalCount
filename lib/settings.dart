@@ -6,8 +6,39 @@ import 'package:calcount/main.dart';
 import 'package:calcount/favourites.dart';
 import 'package:flutter/widgets.dart';
 
-class Settings extends StatelessWidget{
+final profileName = TextEditingController();
+final profileAge = TextEditingController();
+final profileGender = TextEditingController();
+final profileWeight = TextEditingController();
+final profileHeight = TextEditingController();
+final profileCalories = TextEditingController();
+final profileProteins = TextEditingController();
+final profileFats = TextEditingController();
+final profileCarbs = TextEditingController();
+
+var tempName = "";
+var tempAge = "";
+var tempGender = "";
+var tempWeight = "";
+var tempHeight = "";
+var tempCalories = "";
+var tempProteins = "";
+var tempFats = "";
+var tempCarbs = "";
+
+bool lockEdit = true;
+
+class Settings extends StatefulWidget{
   const Settings({super.key});
+
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings>{
+  
+
+  
 
   @override
   Widget build(BuildContext context){
@@ -71,82 +102,327 @@ class Settings extends StatelessWidget{
           ),
         )
       ),
-      body: Center(
-        child: 
-        Container(
-          padding: EdgeInsets.all(60),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                child: ClipOval(
-                  child: SizedBox.fromSize(
-                    size: Size.fromRadius(100),
-                    child: Image(image: AssetImage('assets/images/profile.png')),
+      body: ListView(
+        children: [
+          Container(
+            padding: EdgeInsets.all(60),
+            child: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.fromLTRB(0,10,0,10),
+                  decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                  child: ClipOval(
+                    child: SizedBox.fromSize(
+                      size: Size.fromRadius(100),
+                      child: Image(image: AssetImage('assets/images/profile.png')),
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                height: 40,
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                color: Color.fromARGB(255, 217, 217, 217),
-                child: Row(
+                const SizedBox(height: 20),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Name: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.name,
+                          controller: profileName,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileName.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: 'Name',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Age: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          controller: profileAge,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileAge.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: '0',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Gender: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.name,
+                          controller: profileGender,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileGender.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: 'Gender',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Weight: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          controller: profileWeight,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileWeight.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: '0',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Height: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          controller: profileHeight,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileHeight.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: '0',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Set Goals: ", style: TextStyle(fontSize: 20),),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Calories: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          controller: profileCalories,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileCalories.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: '0',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Proteins: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          controller: profileProteins,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileProteins.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: '0',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Fats: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          controller: profileFats,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileFats.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: '0',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  height: 40,
+                  padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  color: Color.fromARGB(255, 217, 217, 217),
+                  child: Row(
+                    children: [
+                      Text("Carbs: ", style: TextStyle(fontSize: 20),),
+                      Flexible(
+                        child: TextField(
+                          readOnly: lockEdit,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.number,
+                          controller: profileCarbs,
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
+                            suffixIcon: IconButton(
+                              onPressed: profileCarbs.clear, 
+                              icon: lockEdit ? Icon(null) : Icon(Icons.clear),
+                            ),
+                            hintText: '0',
+                            hintStyle: const TextStyle(color: Colors.grey, )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
                   children: [
-                    Text("Name: ", style: TextStyle(fontSize: 20),),
-                    Text("Temperous", style: TextStyle(fontSize: 20),),
+                    ElevatedButton(
+                      onPressed: (){
+                        if(lockEdit){
+                          tempName = profileName.text;
+                          tempAge = profileAge.text;
+                          tempGender = profileGender.text;
+                          tempWeight = profileWeight.text;
+                          tempHeight = profileHeight.text;
+                          tempCalories = profileCalories.text;
+                          tempProteins = profileProteins.text;
+                          tempFats = profileFats.text;
+                          tempCarbs = profileCarbs.text;
+                        } else {
+                          profileName.text = tempName;
+                          profileAge.text = tempAge;
+                          profileGender.text = tempGender;
+                          profileWeight.text = tempWeight;
+                          profileHeight.text = tempHeight;
+                          profileCalories.text = tempCalories;
+                          profileProteins.text = tempProteins;
+                          profileFats.text = tempFats;
+                          profileCarbs.text = tempCarbs;
+                        }
+                        setState(() {
+                          lockEdit = !lockEdit;
+                        });
+                      }, 
+                      child: lockEdit ? Text("Edit") : Text("Cancel"),
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: (){
+                        setState(() {
+                          lockEdit = true;
+                        });
+                      }, 
+                      child: Text("Save"),
+                    ),
                   ],
                 ),
-              ),
-              Container(
-                height: 40,
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                color: Color.fromARGB(255, 217, 217, 217),
-                child: Row(
-                  children: [
-                    Text("Age: ", style: TextStyle(fontSize: 20),),
-                    Text("32", style: TextStyle(fontSize: 20),),
-                  ],
-                ),
-              ),
-              Container(
-                height: 40,
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                color: Color.fromARGB(255, 217, 217, 217),
-                child: Row(
-                  children: [
-                    Text("Gender: ", style: TextStyle(fontSize: 20),),
-                    Text("Male", style: TextStyle(fontSize: 20),),
-                  ],
-                ),
-              ),
-              Container(
-                height: 40,
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                color: Color.fromARGB(255, 217, 217, 217),
-                child: Row(
-                  children: [
-                    Text("Weight: ", style: TextStyle(fontSize: 20),),
-                    Text("50 kg", style: TextStyle(fontSize: 20),),
-                  ],
-                ),
-              ),
-              Container(
-                height: 40,
-                padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                color: Color.fromARGB(255, 217, 217, 217),
-                child: Row(
-                  children: [
-                    Text("Height: ", style: TextStyle(fontSize: 20),),
-                    Text("170 cm", style: TextStyle(fontSize: 20),),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ]
       ),
     );
   }
+  
+  
 }
