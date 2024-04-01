@@ -1,10 +1,14 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:calcount/panel.dart';
 import 'package:flutter/material.dart';
 
 import 'package:calcount/main.dart';
 import 'package:calcount/favourites.dart';
+import 'package:calcount/profile.dart';
 import 'package:flutter/widgets.dart';
+import 'package:sqflite/sqflite.dart';
+
 
 final profileName = TextEditingController();
 final profileAge = TextEditingController();
@@ -28,6 +32,22 @@ var tempCarbs = "";
 
 bool lockEdit = true;
 
+bool isNum(String s) {
+  if (s == null) {
+    return false;
+  }
+  return double.tryParse(s) != null;
+}
+
+bool checkValidProfile() {
+  bool isValid = false;
+  if (isNum(profileAge.text) && isNum(profileWeight.text) && isNum(profileHeight.text) && 
+    isNum(profileCalories.text) && isNum(profileProteins.text) && isNum(profileFats.text) && isNum(profileCarbs.text)){
+    isValid = true;
+  }
+  return isValid;
+}
+
 class Settings extends StatefulWidget{
   const Settings({super.key});
 
@@ -36,10 +56,6 @@ class Settings extends StatefulWidget{
 }
 
 class _SettingsState extends State<Settings>{
-  
-
-  
-
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -408,6 +424,20 @@ class _SettingsState extends State<Settings>{
                     SizedBox(width: 10),
                     ElevatedButton(
                       onPressed: (){
+                        if(checkValidProfile()){
+                          Profile tempProfile = Profile(
+                            id: 1,
+                            name: profileName.text,
+                            age: int.parse(profileAge.text),
+                            gender: profileGender.text,
+                            weight: double.parse(profileWeight.text),
+                            height: double.parse(profileHeight.text),
+                            calories: double.parse(profileCalories.text),
+                            protein: double.parse(profileProteins.text),
+                            fat: double.parse(profileFats.text),
+                            carb: double.parse(profileCarbs.text),
+                          );
+                        }
                         setState(() {
                           lockEdit = true;
                         });

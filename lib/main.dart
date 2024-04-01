@@ -491,7 +491,11 @@ class DatabaseHelper {
         age INTEGER, 
         gender TEXT, 
         weight REAL, 
-        height REAL)
+        height REAL,
+        caloriesGoal REAL,
+        proteinsGoal REAL,
+        fatGoal REAL,
+        carbGoal REAL)
       ''');
   }
 
