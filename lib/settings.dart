@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'dart:io';
 import 'package:calcount/panel.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +9,8 @@ import 'package:calcount/favourites.dart';
 import 'package:calcount/profile.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 
 final profileName = TextEditingController();
@@ -151,7 +154,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileName.clear, 
+                              onPressed: lockEdit ? (){} : profileName.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: 'Name',
@@ -178,7 +181,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileAge.clear, 
+                              onPressed: lockEdit ? (){} : profileAge.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: '0',
@@ -205,7 +208,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileGender.clear, 
+                              onPressed: lockEdit ? (){} : profileGender.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: 'Gender',
@@ -232,7 +235,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileWeight.clear, 
+                              onPressed: lockEdit ? (){} : profileWeight.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: '0',
@@ -259,7 +262,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileHeight.clear, 
+                              onPressed: lockEdit ? (){} : profileHeight.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: '0',
@@ -297,7 +300,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileCalories.clear, 
+                              onPressed: lockEdit ? (){} : profileCalories.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: '0',
@@ -324,7 +327,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileProteins.clear, 
+                              onPressed: lockEdit ? (){} : profileProteins.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: '0',
@@ -351,7 +354,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileFats.clear, 
+                              onPressed: lockEdit ? (){} : profileFats.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: '0',
@@ -378,7 +381,7 @@ class _SettingsState extends State<Settings>{
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.fromLTRB(0,10,0,10),
                             suffixIcon: IconButton(
-                              onPressed: profileCarbs.clear, 
+                              onPressed: lockEdit ? (){} : profileCarbs.clear, 
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
                             hintText: '0',
@@ -455,4 +458,50 @@ class _SettingsState extends State<Settings>{
   }
   
   
+}
+
+class profileDataBase{
+  profileDataBase._privateConstructor();
+
+  static final profileDataBase instance = profileDataBase._privateConstructor();
+
+  static Database? _profileDB;
+  Future<Database> get profileDB async => _profileDB ??= await _initProfileDatabase();
+
+  Future<Database> _initProfileDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'profile.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreateProfile,
+    );
+  }
+
+  Future _onCreateProfile(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE favouriteFoods(
+        id INTEGER PRIMARY KEY, 
+        name TEXT, 
+        age INTEGER, 
+        gender TEXT, 
+        weight REAL, 
+        height REAL,
+        caloriesGoal REAL,
+        proteinsGoal REAL,
+        fatGoal REAL,
+        carbGoal REAL
+      )
+      '''
+    );
+  }
+
+  Future<Profile> getProfile() async {
+    Database db = await instance.profileDB;
+
+    var proQuery = await db.query("profile");
+    List<Profile> profile = proQuery.isNotEmpty ? proQuery.map((c) => Profile.fromMap(c)).toList() : [];
+    // List<Food> foodList = foods.isNotEmpty ? foods.map((c) => Food.fromMap(c)).toList() : [];
+    return profile[0];
+  }
 }
