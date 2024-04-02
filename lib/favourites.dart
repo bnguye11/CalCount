@@ -4,11 +4,34 @@ import 'package:calcount/main.dart';
 import 'package:calcount/settings.dart';
 import 'package:calcount/food_model.dart';
 
-class Favourites extends StatelessWidget {
-  final favouriteFoods;
-  final Function remove;
-  Favourites({Key? key, required this.favouriteFoods, required this.remove})
-      : super(key: key);
+import 'databasehelper.dart';
+
+class Favourites extends StatefulWidget {
+  const Favourites({super.key});
+
+  @override
+  State<Favourites> createState() => _FavouritesState();
+}
+
+class _FavouritesState extends State<Favourites> {
+  List<Food> favouriteFoods = [];
+
+  void setFavourite() async {
+    var temp = await DatabaseHelper.instance.getFoods('favouriteFoods');
+    setState(() {
+      favouriteFoods = temp;
+    });
+  }
+
+  removeFav(id, dbName) async {
+    await DatabaseHelper.instance.remove(id, dbName);
+  }
+
+  @override
+  initState() {
+    super.initState();
+    setFavourite();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +75,7 @@ class Favourites extends StatelessWidget {
                             ),
                             onPressed: () {
                               print("deleted");
-                              remove(favouriteFoods[i].id, "favouriteFoods");
+                              removeFav(favouriteFoods[i].id, "favouriteFoods");
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -130,11 +153,11 @@ class Favourites extends StatelessWidget {
             children: getGrid()),
       )),
       drawer: Drawer(
-        child: Container(
-          color: Color.fromARGB(200, 0, 0, 0),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
+          child: Container(
+        color: Color.fromARGB(200, 0, 0, 0),
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
             const DrawerHeader(
               decoration: BoxDecoration(
                 color: Color.fromARGB(255, 59, 113, 254),
@@ -177,8 +200,8 @@ class Favourites extends StatelessWidget {
               },
             ),
           ],
-                ),
-        )),
+        ),
+      )),
     );
   }
 }
