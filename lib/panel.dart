@@ -85,64 +85,50 @@ class _PanelState extends State<Panel> {
     });
   }
 
+  String getNextValue(List<String> tempArr, int location) {
+    String tempValue = "";
+    tempValue = tempArr[(location + 1)];
+    tempValue = tempValue.replaceAll(RegExp(r'[^\d\n]+'), '').trim();
+    return tempValue;
+  }
+
   void checkRelevant() {
     var tempArr = _textsOcr[0].value.replaceAll(RegExp(r'\n'), '').split(' ');
     var tempValue = "";
 
     print("Called");
-
     //this probably needs to be simpliifed and maybe made into a switch case
     for (int i = 0; i < tempArr.length; i++) {
       print("checking!");
       print(tempArr[i]);
       //Lets text if its atlest 70% similiar for now
-      if ((tempArr[i]).toLowerCase().similarityTo('calories') > 0.70) {
+      if ((tempArr[i]).toLowerCase().similarityTo('calories') > 0.60) {
         if ((i + 1) < tempArr.length) {
-          tempValue = tempArr[(i + 1)];
-          print("HERE IS BEFORE");
-          print(tempValue);
-          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
-
-          tempValue = tempValue.replaceAll(new RegExp(r'[^\d\n]+'), '').trim();
           print("HERE IS CALORIES");
           print(tempValue);
-          calories.text = tempValue;
-        }
-      } else if ((tempArr[i]).toLowerCase().similarityTo('protein') > 0.70) {
+          calories.text = getNextValue(tempArr,i);
+        } // Protéines
+      } else if ((tempArr[i]).toLowerCase().similarityTo('protein') > 0.60 ||
+          (tempArr[i]).toLowerCase().similarityTo('protéines') > 0.60) {
         if ((i + 1) < tempArr.length) {
-          tempValue = tempArr[(i + 1)];
-          print("HERE IS BEFORE");
-          print(tempValue);
-          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
-          tempValue = tempValue.replaceAll(RegExp(r'[^\d\n]+'), '').trim();
           print("HERE IS protein");
           print(tempValue);
-          protein.text = tempValue;
+          protein.text = getNextValue(tempArr,i);
         } // need to account for french make it slightly easer to pass since it seems to pass through the radars alot
       } else if ((tempArr[i]).toLowerCase().similarityTo('fat') > 0.60 ||
           (tempArr[i]).toLowerCase().similarityTo('lipides') > 0.60) {
         if ((i + 1) < tempArr.length) {
-          tempValue = tempArr[(i + 1)];
-          print("HERE IS BEFORE");
-          print(tempValue);
-          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
-          tempValue = tempValue.replaceAll(RegExp(r'[^\d\n]+'), '').trim();
           print("HERE IS fats");
           print(tempValue);
-          fats.text = tempValue;
+          fats.text = getNextValue(tempArr,i);
         } // parle on francais
       } else if ((tempArr[i]).toLowerCase().similarityTo('carbohydrate') >
               0.70 ||
-          (tempArr[i]).toLowerCase().similarityTo('glucides') > 0.70) {
+          (tempArr[i]).toLowerCase().similarityTo('glucides') > 0.60) {
         if ((i + 1) < tempArr.length) {
-          tempValue = tempArr[(i + 1)];
-          print("HERE IS BEFORE");
-          print(tempValue);
-          //tempValue.replaceAll(RegExp(r'[Ii/]'), '1');
-          tempValue = tempValue.replaceAll(RegExp(r'[^\d\n]+'), '').trim();
           print("HERE IS carbs");
           print(tempValue);
-          carbs.text = tempValue;
+          carbs.text = getNextValue(tempArr,i);
         }
       }
     }
@@ -209,6 +195,7 @@ class _PanelState extends State<Panel> {
                 setState(() => _textsOcr = texts);
 
                 if (_textsOcr[0].value != 'Failed to recognize text.') {
+                  print("seems good");
                   checkRelevant();
                 }
                 print("HERE IS RELEVANT TEXT FOUND");
