@@ -1,12 +1,11 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/panel.dart';
 import 'package:calcount/food_model.dart';
 import 'package:calcount/favourites.dart';
 import 'package:calcount/settings.dart';
-
 import 'databasehelper.dart';
+
 import 'package:cron/cron.dart';
 
 void clearFoodsDaily() {
