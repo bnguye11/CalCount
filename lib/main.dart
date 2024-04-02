@@ -124,8 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return tempText;
   }
 
-  Future<List<int>> getTotals() async {
-    List<int> totals = [0, 0, 0, 0];
+  Future<List<double>> getTotals() async {
+    List<double> totals = [0, 0, 0, 0];
     var daily = await DatabaseHelper.instance.getFoods('dailyFoods');
     for (var i = 0; i < daily.length; i++) {
       totals[0] += daily[i].calories;
@@ -212,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   " - Overview -",
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 ),
-                FutureBuilder<List<int>>(
+                FutureBuilder<List<double>>(
                     future: getTotals(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData &&
@@ -333,7 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   height: 30,
                 ),
-                Text(
+                const Text(
                   " - History -",
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 ),

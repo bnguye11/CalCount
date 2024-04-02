@@ -2,10 +2,10 @@ class Food {
   final int?
       id; //this could be optional or not even needed but keeping it in for now
   final String name;
-  final int calories;
-  final int protein;
-  final int fat;
-  final int carb;
+  final double calories;
+  final double protein;
+  final double fat;
+  final double carb;
 
   Food({
     this.id,

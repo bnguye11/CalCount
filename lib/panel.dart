@@ -256,10 +256,10 @@ class _PanelState extends State<Panel> {
                   if (favouritedToggle) {
                     Food tempFavFood = Food(
                         name: foodName.text,
-                        calories: int.parse(calories.text),
-                        protein: int.parse(protein.text),
-                        fat: int.parse(fats.text),
-                        carb: int.parse(carbs.text));
+                        calories: double.parse(calories.text),
+                        protein: double.parse(protein.text),
+                        fat: double.parse(fats.text),
+                        carb: double.parse(carbs.text));
 
                     widget.saveFavourite(tempFavFood);
                     print("Tis favourited");
@@ -371,10 +371,10 @@ class _PanelState extends State<Panel> {
               if (checkValidInput()) {
                 Food tempFood = Food(
                     name: foodName.text,
-                    calories: int.parse(calories.text),
-                    protein: int.parse(protein.text),
-                    fat: int.parse(fats.text),
-                    carb: int.parse(carbs.text));
+                    calories: double.parse(calories.text),
+                    protein: double.parse(protein.text),
+                    fat: double.parse(fats.text),
+                    carb: double.parse(carbs.text));
                 //print(rand);
                 widget.callback(tempFood);
                 if (favouritedToggle) {

@@ -60,10 +60,10 @@ class DatabaseHelper {
       CREATE TABLE dailyFoods(
         id INTEGER PRIMARY KEY, 
         name TEXT, 
-        calories INTEGER, 
-        protein INTEGER, 
-        fat INTEGER, 
-        carb INTEGER)
+        calories REAL, 
+        protein REAL, 
+        fat REAL, 
+        carb REAL)
       ''');
   }
 
@@ -72,10 +72,10 @@ class DatabaseHelper {
       CREATE TABLE favouriteFoods(
         id INTEGER PRIMARY KEY, 
         name TEXT, 
-        calories INTEGER, 
-        protein INTEGER, 
-        fat INTEGER, 
-        carb INTEGER)
+        calories REAL, 
+        protein REAL, 
+        fat REAL, 
+        carb REAL)
       ''');
   }
 
