@@ -465,7 +465,7 @@ class _SettingsState extends State<Settings> {
                   ),
                   SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (checkValidProfile()) {
                         Profile tempProfile = Profile(
                           id: 1,
@@ -479,7 +479,11 @@ class _SettingsState extends State<Settings> {
                           fat: double.parse(profileFats.text),
                           carb: double.parse(profileCarbs.text),
                         );
+
                       }
+                        bool tester = await DatabaseHelper.instance.doesProfileExist();
+                        print(tester);
+                        // var dbProfile = await DatabaseHelper.instance.getProfile();
                       setState(() {
                         lockEdit = true;
                       });

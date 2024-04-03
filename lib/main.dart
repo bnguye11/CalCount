@@ -347,7 +347,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                           child: ListView.builder(
                             shrinkWrap: true,
-                            physics: ClampingScrollPhysics(),
+                            physics: ClampingScrollPhysics(), 
                             itemCount: ssDaily.data!.length,
                             itemBuilder: (context, index) {
                               Food currentFood = ssDaily.data![index];

@@ -1,5 +1,5 @@
 class Profile {
-  final int? id; //this could be optional or not even needed but keeping it in for now
+  final int id; //this could be optional or not even needed but keeping it in for now
   final String name;
   final int age;
   final String gender;
@@ -11,7 +11,7 @@ class Profile {
   final double carb;
 
   Profile({
-    this.id,
+    required this.id,
     required this.name,
     required this.age,
     required this.gender,

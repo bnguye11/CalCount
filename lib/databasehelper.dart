@@ -19,10 +19,8 @@ class DatabaseHelper {
   static Database? _profileDB;
 
   Future<Database> get database async => _database ??= await _initDatabase();
-  Future<Database> get favouriteDB async =>
-      _favouriteDB ??= await _initFavDatabase();
-  Future<Database> get profileDB async =>
-      _profileDB ??= await _initProfileDatabase();
+  Future<Database> get favouriteDB async => _favouriteDB ??= await _initFavDatabase();
+  Future<Database> get profileDB async => _profileDB ??= await _initProfileDatabase();
 
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -81,13 +79,18 @@ class DatabaseHelper {
 
   Future _onCreateProfile(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE favouriteFoods(
+      CREATE TABLE profile(
         id INTEGER PRIMARY KEY, 
         name TEXT, 
         age INTEGER, 
         gender TEXT, 
         weight REAL, 
-        height REAL)
+        height REAL,
+        calories REAL, 
+        protein REAL, 
+        fat REAL, 
+        carb REAL,
+      )
       ''');
   }
 
@@ -152,10 +155,26 @@ class DatabaseHelper {
     Database db = await instance.profileDB;
 
     var proQuery = await db.query("profile");
-    List<Profile> profile = proQuery.isNotEmpty
-        ? proQuery.map((c) => Profile.fromMap(c)).toList()
-        : [];
-    // List<Food> foodList = foods.isNotEmpty ? foods.map((c) => Food.fromMap(c)).toList() : [];
+    List<Profile> profile = proQuery.isNotEmpty ? proQuery.map((c) => Profile.fromMap(c)).toList() : [];
     return profile[0];
+  }
+
+  Future<int> addProfile(Profile tempProfile) async {
+    Database db = await instance.profileDB;
+    return await db.insert("profile", tempProfile.toMap());
+  }
+
+  void updateProfile(Profile tempProfile) async {
+    Database db = await instance.profileDB;
+    await db.update("profile", tempProfile.toMap(),
+      where: 'id = 1',
+    );
+  }
+  
+  Future <bool> doesProfileExist() async {
+    Database db = await instance.profileDB;
+    String id = db.query("profile", columns: ['id'], where: 'id = 1').toString();
+    print(id);
+    return id.isNotEmpty;
   }
 }
