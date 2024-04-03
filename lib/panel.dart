@@ -123,7 +123,7 @@ class _PanelState extends State<Panel> {
           fats.text = getNextValue(tempArr,i);
         } // parle on francais
       } else if ((tempArr[i]).toLowerCase().similarityTo('carbohydrate') >
-              0.70 ||
+              0.60 ||
           (tempArr[i]).toLowerCase().similarityTo('glucides') > 0.60) {
         if ((i + 1) < tempArr.length) {
           print("HERE IS carbs");

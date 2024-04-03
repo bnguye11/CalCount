@@ -1,3 +1,4 @@
+import 'package:calcount/barDisplay.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/panel.dart';
@@ -13,8 +14,21 @@ void clearFoodsDaily() {
 
   //This should reset everyday but im not sure if it works if its not in the background or foreground
   //we could switch to something like firebase but that kinda defeats the purpose of this app and also we already did most of the work in sqlflite
+  // saves data before clearing it;
   cron.schedule(Schedule.parse('0 0 * * *'), () async {
     print("cleared");
+    //lets use dummy data for now;
+    /*
+    List<double> totals = [0, 0, 0, 0];
+    var daily = await DatabaseHelper.instance.getFoods('dailyFoods');
+    for (var i = 0; i < daily.length; i++) {
+      totals[0] += daily[i].calories;
+      totals[1] += daily[i].protein;
+      totals[2] += daily[i].fat;
+      totals[3] += daily[i].carb;
+      //print(totals);
+    }
+    */
     await DatabaseHelper.instance.clearTable('dailyFoods');
   });
 }
@@ -57,6 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Food newlyAddedFood =
       Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
+
 
   callback(updatedFood) async {
     setState(() {
@@ -333,6 +348,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   height: 30,
                 ),
+                BarDisplay(),
                 const Text(
                   " - History -",
                   style: TextStyle(fontSize: 30, color: Colors.white),
@@ -388,13 +404,6 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         },
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   heroTag: "btn1",
-      //   onPressed: () {
-      //     panelController.open();
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
 }
