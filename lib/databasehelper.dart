@@ -143,6 +143,13 @@ class DatabaseHelper {
     return await db.insert(dbName, food.toMap());
   }
 
+    Future<int> addHistory(daily) async {
+    Database db = await instance.historyDB;
+    print("here is food structure");
+    print(daily);
+    return await db.insert('history', daily);
+  }
+
   Future removeLatest(String dbName) async {
     Database db;
     if (dbName == "dailyFoods") {

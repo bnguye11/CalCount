@@ -15,10 +15,12 @@ void clearFoodsDaily() {
   //This should reset everyday but im not sure if it works if its not in the background or foreground
   //we could switch to something like firebase but that kinda defeats the purpose of this app and also we already did most of the work in sqlflite
   // saves data before clearing it;
-  cron.schedule(Schedule.parse('0 0 * * *'), () async {
+  //should now run at 11:59pm
+  cron.schedule(Schedule.parse('59 23 * * *'), () async {
     print("cleared");
     //lets use dummy data for now;
-    /*
+    var currentTime = DateTime.now();
+    
     List<double> totals = [0, 0, 0, 0];
     var daily = await DatabaseHelper.instance.getFoods('dailyFoods');
     for (var i = 0; i < daily.length; i++) {
@@ -28,8 +30,18 @@ void clearFoodsDaily() {
       totals[3] += daily[i].carb;
       //print(totals);
     }
-    */
+    var storedDaily = {
+      'date': '${currentTime.year}-${currentTime.month}-${currentTime.day}',
+      'calories': totals[0],
+      'protein': totals[1],
+      'fat': totals[2],
+      'carb': totals[3],
+    };
+
+    await DatabaseHelper.instance.addHistory(storedDaily);
     await DatabaseHelper.instance.clearTable('dailyFoods');
+
+    print("donzo");
   });
 }
 
@@ -43,9 +55,6 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // This widget is the root of your application.
 
-
-
-  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
