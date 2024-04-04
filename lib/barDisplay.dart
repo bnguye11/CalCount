@@ -4,13 +4,14 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class BarDisplay extends StatefulWidget {
-  const BarDisplay({super.key});
+   BarDisplay({Key? key, required this.currentCalorie, required this.weeklyCalories}) : super(key: key);
 
   final Color barBackgroundColor = Colors.black;
   final Color barColor = Colors.orange;
   final Color touchedBarColor = Colors.white;
   final Color currentDayColour = Colors.green;
-
+  final double currentCalorie;
+  List <double> weeklyCalories;
   @override
   State<StatefulWidget> createState() => _BarDisplayState();
 }
@@ -212,13 +213,14 @@ class _BarDisplayState extends State<BarDisplay> {
     //should return (1 to 7) - 1
     var today = (DateTime.now().weekday) - 1;
 
-
     // its not perfect but for now I will only display calories of the current day
     // I guess I could pre populate the table. for now I'll do daily
 
-    for(int i = 0; i < 7;i++) {
+    for (int i = 0; i < 7; i++) {
       bool isToday = (today == i) ? true : false;
-      var tempBar = makeGroupData(i, 5/*this is a dummy value*/, isToday, isTouched: i == touchedIndex);
+      double tempVal = (isToday) ? widget.currentCalorie : widget.weeklyCalories[i];
+      var tempBar = makeGroupData(i, tempVal /*this is a dummy value*/, isToday,
+          isTouched: i == touchedIndex);
       bars.add(tempBar);
     }
     return bars;
@@ -227,8 +229,7 @@ class _BarDisplayState extends State<BarDisplay> {
   BarChartGroupData makeGroupData(
     int x,
     double y,
-    bool isToday, 
-    {
+    bool isToday, {
     bool isTouched = false,
     Color? barColor,
     double width = 22,

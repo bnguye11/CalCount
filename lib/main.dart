@@ -42,6 +42,10 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // This widget is the root of your application.
+
+
+
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -71,6 +75,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Food newlyAddedFood =
       Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
+
+  //Temp storage for current calories
+  double currentCalorie = 0;
+
+  //dummy data for calories
+  List<double> weeklyCalories = [
+    3000,
+    2504.2,
+    2750,
+    2000,
+    1254.34,
+    3852,
+    4000,
+  ];
 
 
   callback(updatedFood) async {
@@ -152,9 +170,24 @@ class _MyHomePageState extends State<MyHomePage> {
     return totals;
   }
 
+  void setCurrentCal () async {
+    var totals = await getTotals();
+    setState(() {
+      currentCalorie = totals[0];
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setCurrentCal();
+  }
+
   @override
   Widget build(BuildContext context) {
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.8;
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -192,9 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ListTile(
                 textColor: Colors.white,
                 title: const Text('Favourites'),
-                onTap: () async {
-                  var favFoods =
-                      await DatabaseHelper.instance.getFoods('favouriteFoods');
+                onTap: ()  {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Favourites()),
@@ -348,7 +379,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   height: 30,
                 ),
-                BarDisplay(),
+                BarDisplay(currentCalorie: currentCalorie, weeklyCalories: weeklyCalories,),
                 const Text(
                   " - History -",
                   style: TextStyle(fontSize: 30, color: Colors.white),
@@ -401,6 +432,7 @@ class _MyHomePageState extends State<MyHomePage> {
             saveFavourite: saveFavouriteFood,
             removeLatest: removeLatest,
             favouriteList: getFavourite,
+            updateCurrentCal: setCurrentCal,
           );
         },
       ),
