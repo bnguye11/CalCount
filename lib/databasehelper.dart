@@ -17,10 +17,12 @@ class DatabaseHelper {
   static Database? _database;
   static Database? _favouriteDB;
   static Database? _profileDB;
+  static Database? _historyDB;
 
   Future<Database> get database async => _database ??= await _initDatabase();
   Future<Database> get favouriteDB async => _favouriteDB ??= await _initFavDatabase();
   Future<Database> get profileDB async => _profileDB ??= await _initProfileDatabase();
+  Future<Database> get historyDB async => _historyDB ??= await _initHistoryDatabase();
 
   Future<Database> _initDatabase() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
@@ -49,6 +51,16 @@ class DatabaseHelper {
       path,
       version: 1,
       onCreate: _onCreateProfile,
+    );
+  }
+
+  Future<Database> _initHistoryDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'history.db');
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreateHistory,
     );
   }
 
@@ -94,6 +106,19 @@ class DatabaseHelper {
       ''');
   }
 
+  Future _onCreateHistory(Database db, int version) async {
+    //date might not be necessary since I think it autotimestamps info when you add it to the db
+    await db.execute('''
+      CREATE TABLE history(
+        id INTEGER PRIMARY KEY, 
+        date TEXT, 
+        calories REAL, 
+        protein REAL, 
+        fat REAL, 
+        carb REAL)
+      ''');
+  }
+
   Future<List<Food>> getFoods(String dbName) async {
     Database db;
     if (dbName == "dailyFoods") {
@@ -115,7 +140,16 @@ class DatabaseHelper {
     } else {
       db = await instance.favouriteDB;
     }
+    print("here is food structure");
+    print(food.toMap());
     return await db.insert(dbName, food.toMap());
+  }
+
+    Future<int> addHistory(daily) async {
+    Database db = await instance.historyDB;
+    print("here is food structure");
+    print(daily);
+    return await db.insert('history', daily);
   }
 
   Future removeLatest(String dbName) async {

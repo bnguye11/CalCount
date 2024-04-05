@@ -1,3 +1,4 @@
+import 'package:calcount/barDisplay.dart';
 import 'package:flutter/material.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/panel.dart';
@@ -13,9 +14,34 @@ void clearFoodsDaily() {
 
   //This should reset everyday but im not sure if it works if its not in the background or foreground
   //we could switch to something like firebase but that kinda defeats the purpose of this app and also we already did most of the work in sqlflite
-  cron.schedule(Schedule.parse('0 0 * * *'), () async {
+  // saves data before clearing it;
+  //should now run at 11:59pm
+  cron.schedule(Schedule.parse('59 23 * * *'), () async {
     print("cleared");
+    //lets use dummy data for now;
+    var currentTime = DateTime.now();
+    
+    List<double> totals = [0, 0, 0, 0];
+    var daily = await DatabaseHelper.instance.getFoods('dailyFoods');
+    for (var i = 0; i < daily.length; i++) {
+      totals[0] += daily[i].calories;
+      totals[1] += daily[i].protein;
+      totals[2] += daily[i].fat;
+      totals[3] += daily[i].carb;
+      //print(totals);
+    }
+    var storedDaily = {
+      'date': '${currentTime.year}-${currentTime.month}-${currentTime.day}',
+      'calories': totals[0],
+      'protein': totals[1],
+      'fat': totals[2],
+      'carb': totals[3],
+    };
+
+    await DatabaseHelper.instance.addHistory(storedDaily);
     await DatabaseHelper.instance.clearTable('dailyFoods');
+
+    print("donzo");
   });
 }
 
@@ -28,6 +54,7 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -57,6 +84,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Food newlyAddedFood =
       Food(id: -1, name: "Temp", calories: 0, fat: 0, protein: 0, carb: 0);
+
+  //Temp storage for current calories
+  double currentCalorie = 0;
+
+  //dummy data for calories
+  List<double> weeklyCalories = [
+    3000,
+    2504.2,
+    2750,
+    2000,
+    1254.34,
+    3852,
+    4000,
+  ];
+
 
   callback(updatedFood) async {
     setState(() {
@@ -137,9 +179,24 @@ class _MyHomePageState extends State<MyHomePage> {
     return totals;
   }
 
+  void setCurrentCal () async {
+    var totals = await getTotals();
+    setState(() {
+      currentCalorie = totals[0];
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setCurrentCal();
+  }
+
   @override
   Widget build(BuildContext context) {
     final panelHeightOpen = MediaQuery.of(context).size.height * 0.8;
+    
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).primaryColor,
@@ -177,9 +234,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ListTile(
                 textColor: Colors.white,
                 title: const Text('Favourites'),
-                onTap: () async {
-                  var favFoods =
-                      await DatabaseHelper.instance.getFoods('favouriteFoods');
+                onTap: ()  {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => Favourites()),
@@ -333,6 +388,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Container(
                   height: 30,
                 ),
+                BarDisplay(currentCalorie: currentCalorie, weeklyCalories: weeklyCalories,),
                 const Text(
                   " - History -",
                   style: TextStyle(fontSize: 30, color: Colors.white),
@@ -385,16 +441,10 @@ class _MyHomePageState extends State<MyHomePage> {
             saveFavourite: saveFavouriteFood,
             removeLatest: removeLatest,
             favouriteList: getFavourite,
+            updateCurrentCal: setCurrentCal,
           );
         },
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   heroTag: "btn1",
-      //   onPressed: () {
-      //     panelController.open();
-      //   },
-      //   child: const Icon(Icons.add),
-      // ),
     );
   }
 }

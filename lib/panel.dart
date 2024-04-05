@@ -52,7 +52,8 @@ class Panel extends StatefulWidget {
       required this.callback,
       required this.saveFavourite,
       required this.removeLatest,
-      required this.favouriteList})
+      required this.favouriteList,
+      required this.updateCurrentCal})
       : super(key: key);
 
   final ScrollController controller;
@@ -61,6 +62,7 @@ class Panel extends StatefulWidget {
   final Function saveFavourite;
   final Function removeLatest;
   final Function favouriteList;
+  final Function updateCurrentCal;
 
   @override
   State<Panel> createState() => _PanelState();
@@ -106,29 +108,29 @@ class _PanelState extends State<Panel> {
         if ((i + 1) < tempArr.length) {
           print("HERE IS CALORIES");
           print(tempValue);
-          calories.text = getNextValue(tempArr,i);
+          calories.text = getNextValue(tempArr, i);
         } // Protéines
       } else if ((tempArr[i]).toLowerCase().similarityTo('protein') > 0.60 ||
           (tempArr[i]).toLowerCase().similarityTo('protéines') > 0.60) {
         if ((i + 1) < tempArr.length) {
           print("HERE IS protein");
           print(tempValue);
-          protein.text = getNextValue(tempArr,i);
+          protein.text = getNextValue(tempArr, i);
         } // need to account for french make it slightly easer to pass since it seems to pass through the radars alot
       } else if ((tempArr[i]).toLowerCase().similarityTo('fat') > 0.60 ||
           (tempArr[i]).toLowerCase().similarityTo('lipides') > 0.60) {
         if ((i + 1) < tempArr.length) {
           print("HERE IS fats");
           print(tempValue);
-          fats.text = getNextValue(tempArr,i);
+          fats.text = getNextValue(tempArr, i);
         } // parle on francais
       } else if ((tempArr[i]).toLowerCase().similarityTo('carbohydrate') >
-              0.70 ||
+              0.60 ||
           (tempArr[i]).toLowerCase().similarityTo('glucides') > 0.60) {
         if ((i + 1) < tempArr.length) {
           print("HERE IS carbs");
           print(tempValue);
-          carbs.text = getNextValue(tempArr,i);
+          carbs.text = getNextValue(tempArr, i);
         }
       }
     }
@@ -370,6 +372,7 @@ class _PanelState extends State<Panel> {
                   });
                 }
                 clearTextFields();
+                widget.updateCurrentCal();
                 widget.panelController.close();
               } else {
                 print("womp womp not valid");
