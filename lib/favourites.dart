@@ -74,7 +74,7 @@ class _FavouritesState extends State<Favourites> {
                               //color: Colors.red,
                             ),
                             onPressed: () {
-                              print("deleted");
+                              // print("deleted");
                               removeFav(favouriteFoods[i].id, "favouriteFoods");
                               Navigator.push(
                                 context,
@@ -128,7 +128,7 @@ class _FavouritesState extends State<Favourites> {
                 ],
               )),
           onTap: () {
-            print("tis tapped");
+            // print("tis tapped");
           },
         ));
       }

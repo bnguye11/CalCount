@@ -1,4 +1,7 @@
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
+
 import 'package:calcount/barDisplay.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -18,7 +21,7 @@ void clearFoodsDaily() {
   // saves data before clearing it;
   //should now run at 11:59pm
   cron.schedule(Schedule.parse('59 23 * * *'), () async {
-    print("cleared");
+    // print("cleared");
     //lets use dummy data for now;
     var currentTime = DateTime.now();
     
@@ -42,7 +45,7 @@ void clearFoodsDaily() {
     await DatabaseHelper.instance.addHistory(storedDaily);
     await DatabaseHelper.instance.clearTable('dailyFoods');
 
-    print("donzo");
+    // print("donzo");
   });
 }
 
@@ -107,37 +110,37 @@ class _MyHomePageState extends State<MyHomePage> {
     });
 
     await DatabaseHelper.instance.add(newlyAddedFood, 'dailyFoods');
-    print("added!");
-    print(newlyAddedFood.toString());
+    // print("added!");
+    // print(newlyAddedFood.toString());
     var beans = await DatabaseHelper.instance.getFoods('dailyFoods');
-    print("heres what in here so far");
+    // print("heres what in here so far");
     //print(beans);
     for (var i = 0; i < beans.length; i++) {
-      print(beans[i].name);
+      // print(beans[i].name);
     }
   }
 
   saveFavouriteFood(food) async {
     await DatabaseHelper.instance.add(food, 'favouriteFoods');
-    print("favoruite food added!");
+    // print("favoruite food added!");
     var beans = await DatabaseHelper.instance.getFoods('favouriteFoods');
-    print("heres what in here so far");
+    // print("heres what in here so far");
     for (var i = 0; i < beans.length; i++) {
-      print(beans[i].name);
+      // print(beans[i].name);
     }
   }
 
   removeLatest() async {
     await DatabaseHelper.instance.removeLatest('favouriteFoods');
     var beans = await DatabaseHelper.instance.getFoods('favouriteFoods');
-    print("heres what in here so far");
+    // print("heres what in here so far");
     for (var i = 0; i < beans.length; i++) {
-      print(beans[i].name);
+      // print(beans[i].name);
     }
   }
 
   Future<List<Food>> getDaily() async {
-    return await DatabaseHelper.instance.getFoods('dailyFoods');
+    return await DatabaseHelper.instance.getFoodsId('dailyFoods');
   }
 
   getFavourite() async {
@@ -145,6 +148,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   removeFav(id, dbName) async {
+    await DatabaseHelper.instance.remove(id, dbName);
+  }
+
+  removeFromId(id, dbName) async {
     await DatabaseHelper.instance.remove(id, dbName);
   }
 
@@ -177,21 +184,12 @@ class _MyHomePageState extends State<MyHomePage> {
       totals[1] += daily[i].protein;
       totals[2] += daily[i].fat;
       totals[3] += daily[i].carb;
-      print(totals);
     }
     totals[4] = profile.calories;
     totals[5] = profile.protein;
     totals[6] = profile.fat;
     totals[7] = profile.carb;
     return totals;
-  }
-
-  Future<List<double>> getGoals() async {
-    List<double> goals = [0, 0, 0, 0];
-    
-    
-
-    return goals;
   }
 
   void setCurrentCal () async {
@@ -441,12 +439,73 @@ class _MyHomePageState extends State<MyHomePage> {
                   " - History -",
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 ),
+                Container(
+                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: Table(
+                    border: TableBorder.all(color: Colors.white),
+                    children: [
+                      TableRow(
+                        children: [
+                          Container(
+                            color: Color.fromARGB(255, 59, 113, 254),
+                            child: Text(
+                              "Name",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Container(
+                            color: Color.fromARGB(255, 59, 113, 254),
+                            child: Text(
+                              "Calories",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Container(
+                            color: Color.fromARGB(255, 59, 113, 254),
+                            child: Text(
+                              "Proteins",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Container(
+                            color: Color.fromARGB(255, 59, 113, 254),
+                            child: Text(
+                              "Fats",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Container(
+                            color: Color.fromARGB(255, 59, 113, 254),
+                            child: Text(
+                              "Carbs",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          Container(
+                            color: Color.fromARGB(255, 59, 113, 254),
+                            child: Text(
+                              "Delete",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ]
+                      ),
+                    ],
+                  ),
+                ),
+                
                 FutureBuilder<List<Food>>(
                     future: getDaily(),
                     builder: (context, ssDaily) {
                       if (ssDaily.hasData &&
                           ssDaily.connectionState == ConnectionState.done) {
-                        print(ssDaily.data);
+                        // print(ssDaily.data);
                         return Container(
                           padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                           child: ListView.builder(
@@ -457,10 +516,107 @@ class _MyHomePageState extends State<MyHomePage> {
                               Food currentFood = ssDaily.data![index];
                               return Align(
                                 alignment: Alignment.center,
-                                child: Text(
-                                  "${currentFood.name} - cal: ${currentFood.calories}kcal / P:${currentFood.protein}g / F:${currentFood.fat}g / C:${currentFood.carb}g",
-                                  style: TextStyle(color: Colors.white),
+                                child: Container(
+                                  padding: EdgeInsets.fromLTRB(10,0,10,0),
+                                  child: Table(
+                                    defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+                                    border: TableBorder.all(color: Colors.white),
+                                    children: [
+                                      TableRow(
+                                        children: [
+                                          Container(
+                                            color: Color.fromARGB(255, 59, 113, 254),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "${currentFood.name}",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            color: Color.fromARGB(255, 59, 113, 254),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "${currentFood.calories}kcal",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            color: Color.fromARGB(255, 59, 113, 254),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "${currentFood.protein}g",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            color: Color.fromARGB(255, 59, 113, 254),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "${currentFood.fat}g",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            color: Color.fromARGB(255, 59, 113, 254),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "${currentFood.carb}g",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(color: Colors.white),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            color: Color.fromARGB(255, 59, 113, 254),
+                                            child: Align(
+                                              alignment: Alignment.center,
+                                              child: SizedBox(
+                                                height: 20,
+                                                width: 50,
+                                                child: ElevatedButton(
+                                                  style: ButtonStyle(
+                                                    shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.zero)),
+                                                    backgroundColor: MaterialStateProperty.all(Colors.red),
+                                                    padding: MaterialStateProperty.all(EdgeInsets.zero),
+                                                  ),
+                                                  child: Text("Delete", style: TextStyle(color:Colors.black)),  
+                                                  onPressed: (){
+                                                    removeFromId(currentFood.id, "dailyFoods");
+                                                    setState(() {
+                                                      
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                              // child: Text(
+                                              //   "${currentFood.id}",
+                                              //   textAlign: TextAlign.center,
+                                              //   style: TextStyle(color: Colors.white),
+                                              // ),
+                                            ),
+                                          ),
+                                        ]
+                                      ),
+                                    ]
+                                  ),
                                 ),
+                                // child: Text(
+                                //   "${currentFood.name} - cal: ${currentFood.calories}kcal / P:${currentFood.protein}g / F:${currentFood.fat}g / C:${currentFood.carb}g",
+                                //   style: TextStyle(color: Colors.white),
+                                // ),
                               );
                             },
                           ),
@@ -469,7 +625,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         return CircularProgressIndicator();
                       }
                     }),
-                setText(),
+                // setText(),
               ],
             ),
           ],

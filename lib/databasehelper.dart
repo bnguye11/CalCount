@@ -132,6 +132,20 @@ class DatabaseHelper {
     return foodList;
   }
 
+  Future<List<Food>> getFoodsId(String dbName) async {
+    Database db;
+    if (dbName == "dailyFoods") {
+      db = await instance.database;
+    } else {
+      db = await instance.favouriteDB;
+    }
+
+    var foods = await db.rawQuery("SELECT * FROM " + dbName + " ORDER BY id DESC");
+    List<Food> foodList =
+        foods.isNotEmpty ? foods.map((c) => Food.fromMap(c)).toList() : [];
+    return foodList;
+  }
+
   Future<int> add(Food food, String dbName) async {
     Database db;
     if (dbName == "dailyFoods") {
@@ -139,15 +153,15 @@ class DatabaseHelper {
     } else {
       db = await instance.favouriteDB;
     }
-    print("here is food structure");
-    print(food.toMap());
+    // print("here is food structure");
+    // print(food.toMap());
     return await db.insert(dbName, food.toMap());
   }
 
     Future<int> addHistory(daily) async {
     Database db = await instance.historyDB;
-    print("here is food structure");
-    print(daily);
+    // print("here is food structure");
+    // print(daily);
     return await db.insert('history', daily);
   }
 
