@@ -1,7 +1,9 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:flutter/material.dart';
 import 'package:calcount/main.dart';
 import 'package:calcount/favourites.dart';
 import 'package:calcount/profile.dart';
+import 'package:sqflite/sqflite.dart';
 import 'databasehelper.dart';
 
 final profileName = TextEditingController();
@@ -13,6 +15,8 @@ final profileCalories = TextEditingController();
 final profileProteins = TextEditingController();
 final profileFats = TextEditingController();
 final profileCarbs = TextEditingController();
+
+bool doesProExist = false;
 
 var tempName = "";
 var tempAge = "";
@@ -47,6 +51,21 @@ bool checkValidProfile() {
   return isValid;
 }
 
+void setText() async {
+  Profile tempProfile = await DatabaseHelper.instance.getProfile();
+  profileName.text = tempProfile.name;
+  profileAge.text = tempProfile.age.toString();
+  profileGender.text = tempProfile.gender;
+  profileWeight.text = tempProfile.weight.toString();
+  profileHeight.text = tempProfile.height.toString();
+  profileCalories.text = tempProfile.calories.toString();
+  profileProteins.text = tempProfile.protein.toString();
+  profileFats.text = tempProfile.fat.toString();
+  profileCarbs.text = tempProfile.carb.toString();
+
+  print(tempProfile.toString());
+}
+
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -55,6 +74,12 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  @override
+  void initState() {
+    super.initState();
+    setText();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -435,7 +460,7 @@ class _SettingsState extends State<Settings> {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (lockEdit) {
                         tempName = profileName.text;
                         tempAge = profileAge.text;
@@ -460,6 +485,8 @@ class _SettingsState extends State<Settings> {
                       setState(() {
                         lockEdit = !lockEdit;
                       });
+                      await DatabaseHelper.instance.getProfile();
+                      await DatabaseHelper.instance.doesProfileExist();
                     },
                     child: lockEdit ? Text("Edit") : Text("Cancel"),
                   ),
@@ -480,13 +507,22 @@ class _SettingsState extends State<Settings> {
                           carb: double.parse(profileCarbs.text),
                         );
 
+                        bool doesExist = await DatabaseHelper.instance.doesProfileExist();
+                        if(doesExist){
+                          await DatabaseHelper.instance.updateProfile(tempProfile);
+                          print("Updating");
+                          print(await DatabaseHelper.instance.getProfile().toString());
+                        } else {
+                          await DatabaseHelper.instance.addProfile(tempProfile);
+                          print("Adding");
+                        }
+                        setState(() {
+                          lockEdit = true;
+                        });
+                      } else {
+                        print("Invalid");
                       }
-                        bool tester = await DatabaseHelper.instance.doesProfileExist();
-                        print(tester);
-                        // var dbProfile = await DatabaseHelper.instance.getProfile();
-                      setState(() {
-                        lockEdit = true;
-                      });
+                      
                     },
                     child: Text("Save"),
                   ),

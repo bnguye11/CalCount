@@ -101,8 +101,7 @@ class DatabaseHelper {
         calories REAL, 
         protein REAL, 
         fat REAL, 
-        carb REAL,
-      )
+        carb REAL)
       ''');
   }
 
@@ -190,7 +189,8 @@ class DatabaseHelper {
 
     var proQuery = await db.query("profile");
     List<Profile> profile = proQuery.isNotEmpty ? proQuery.map((c) => Profile.fromMap(c)).toList() : [];
-    return profile[0];
+    print("DB GET: ${profile.toString()}");
+    return profile.first;
   }
 
   Future<int> addProfile(Profile tempProfile) async {
@@ -198,17 +198,25 @@ class DatabaseHelper {
     return await db.insert("profile", tempProfile.toMap());
   }
 
-  void updateProfile(Profile tempProfile) async {
+  Future<int> updateProfile(Profile tempProfile) async {
     Database db = await instance.profileDB;
-    await db.update("profile", tempProfile.toMap(),
+    return await db.update("profile", tempProfile.toMap(),
       where: 'id = 1',
     );
   }
   
   Future <bool> doesProfileExist() async {
     Database db = await instance.profileDB;
-    String id = db.query("profile", columns: ['id'], where: 'id = 1').toString();
-    print(id);
-    return id.isNotEmpty;
+    var proQuery = await db.query("profile");
+    List<Profile> profile = proQuery.isNotEmpty ? proQuery.map((c) => Profile.fromMap(c)).toList() : [];
+    print("DB EXIST: ${profile.toString()}");
+    
+    if(profile.toString().isNotEmpty){
+      print("DB RETURN TRUE");
+      return true;
+    } else {
+      print("DB RETURN F");
+      return false;
+    }
   }
 }
