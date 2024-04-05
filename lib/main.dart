@@ -10,6 +10,7 @@ import 'package:calcount/food_model.dart';
 import 'package:calcount/favourites.dart';
 import 'package:calcount/settings.dart';
 import 'databasehelper.dart';
+import 'history_model.dart';
 
 import 'package:cron/cron.dart';
 
@@ -91,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //Temp storage for current calories
   double currentCalorie = 0;
-
+    
   //dummy data for calories
   List<double> weeklyCalories = [
     3000,

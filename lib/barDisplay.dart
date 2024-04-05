@@ -169,36 +169,37 @@ class _BarDisplayState extends State<BarDisplay> {
   }
 
   Widget getTitles(double value, TitleMeta meta) {
-    const style = TextStyle(
-      color: Colors.white,
+    var today = (DateTime.now().weekday) - 1;
+    var style = TextStyle(
+      color: (today == value.toInt()) ?  Colors.green : Colors.white,
       fontWeight: FontWeight.bold,
       fontSize: 14,
     );
     Widget text;
     switch (value.toInt()) {
       case 0:
-        text = const Text('M', style: style);
+        text =  Text('M', style: style);
         break;
       case 1:
-        text = const Text('T', style: style);
+        text =  Text('T', style: style);
         break;
       case 2:
-        text = const Text('W', style: style);
+        text =  Text('W', style: style);
         break;
       case 3:
-        text = const Text('T', style: style);
+        text =  Text('T', style: style);
         break;
       case 4:
-        text = const Text('F', style: style);
+        text =  Text('F', style: style);
         break;
       case 5:
-        text = const Text('S', style: style);
+        text =  Text('Sa', style: style);
         break;
       case 6:
-        text = const Text('S', style: style);
+        text =  Text('Su', style: style);
         break;
       default:
-        text = const Text('', style: style);
+        text =  Text('', style: style);
         break;
     }
     return SideTitleWidget(
@@ -219,6 +220,7 @@ class _BarDisplayState extends State<BarDisplay> {
     for (int i = 0; i < 7; i++) {
       bool isToday = (today == i) ? true : false;
       double tempVal = (isToday) ? widget.currentCalorie : widget.weeklyCalories[i];
+      tempVal = (i > today) ? 0 : tempVal;
       var tempBar = makeGroupData(i, tempVal /*this is a dummy value*/, isToday,
           isTouched: i == touchedIndex);
       bars.add(tempBar);

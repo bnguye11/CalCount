@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'package:calcount/food_model.dart';
+import 'history_model.dart';
 import 'package:calcount/profile.dart';
 
 //this could probably be moved to its own separate file but keeping it here for now
@@ -207,6 +208,14 @@ class DatabaseHelper {
     return profile.first;
   }
 
+  Future<List<History>> getHistory(int amount) async {
+    Database db = await instance.historyDB;
+    var hist = await db.rawQuery("SELECT * FROM history ORDER BY timestamp DESC LIMIT ${amount}");
+    List<History> weeklyHistory = hist.isNotEmpty ? hist.map((c) => History.fromMap(c)).toList() : [];
+
+    return weeklyHistory;
+  }
+
   Future<int> addProfile(Profile tempProfile) async {
     Database db = await instance.profileDB;
     return await db.insert("profile", tempProfile.toMap());
@@ -231,4 +240,6 @@ class DatabaseHelper {
       return false;
     }
   }
+
+
 }
