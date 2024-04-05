@@ -62,8 +62,6 @@ void setText() async {
   profileProteins.text = tempProfile.protein.toString();
   profileFats.text = tempProfile.fat.toString();
   profileCarbs.text = tempProfile.carb.toString();
-
-  print(tempProfile.toString());
 }
 
 class Settings extends StatefulWidget {
@@ -485,8 +483,6 @@ class _SettingsState extends State<Settings> {
                       setState(() {
                         lockEdit = !lockEdit;
                       });
-                      await DatabaseHelper.instance.getProfile();
-                      await DatabaseHelper.instance.doesProfileExist();
                     },
                     child: lockEdit ? Text("Edit") : Text("Cancel"),
                   ),
@@ -508,22 +504,15 @@ class _SettingsState extends State<Settings> {
                         );
 
                         bool doesExist = await DatabaseHelper.instance.doesProfileExist();
-                        print("Saving: $doesExist");
                         if(doesExist){
                           await DatabaseHelper.instance.updateProfile(tempProfile);
-                          print("Updating");
-                          print(await DatabaseHelper.instance.getProfile().toString());
                         } else {
-                          print("Adding");
                           await DatabaseHelper.instance.addProfile(tempProfile);
                         }
                         setState(() {
                           lockEdit = true;
                         });
-                      } else {
-                        print("Invalid");
                       }
-                      
                     },
                     child: Text("Save"),
                   ),

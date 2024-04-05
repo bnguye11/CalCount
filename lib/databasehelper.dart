@@ -186,16 +186,15 @@ class DatabaseHelper {
 
   Future<Profile> getProfile() async {
     Database db = await instance.profileDB;
+    Profile empty = Profile(id: -1, name: "", age: -1, gender: "", weight: -1, height: -1, calories: -1, protein: -1, fat: -1, carb: -1);
 
     var proQuery = await db.query("profile");
     List<Profile> profile = proQuery.isNotEmpty ? proQuery.map((c) => Profile.fromMap(c)).toList() : [];
-    print("DB GET: ${profile.toString()}");
     return profile.first;
   }
 
   Future<int> addProfile(Profile tempProfile) async {
     Database db = await instance.profileDB;
-    print("DB ADD: ${tempProfile.toString()}");
     return await db.insert("profile", tempProfile.toMap());
   }
 
@@ -210,13 +209,11 @@ class DatabaseHelper {
     Database db = await instance.profileDB;
     var proQuery = await db.query("profile");
     List<Profile> profile = proQuery.isNotEmpty ? proQuery.map((c) => Profile.fromMap(c)).toList() : [];
-    print("DB EXIST: ${profile.toString()}");
-    
-    if(profile.toString().isEmpty){
-      print("DB RETURN TRUE");
+    if(profile.isEmpty){
+      return false;
+    } else if (profile.first.toString().isNotEmpty) {
       return true;
     } else {
-      print("DB RETURN F");
       return false;
     }
   }

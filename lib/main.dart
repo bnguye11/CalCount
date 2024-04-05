@@ -1,5 +1,6 @@
 import 'package:calcount/barDisplay.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:calcount/panel.dart';
 import 'package:calcount/food_model.dart';
@@ -167,7 +168,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<List<double>> getTotals() async {
-    List<double> totals = [0, 0, 0, 0];
+    //Hijacked function to also include the goals from profile, they are in index 4-7
+    List<double> totals = [0, 0, 0, 0 , 0, 0, 0, 0];
+    var profile = await DatabaseHelper.instance.getProfile();
     var daily = await DatabaseHelper.instance.getFoods('dailyFoods');
     for (var i = 0; i < daily.length; i++) {
       totals[0] += daily[i].calories;
@@ -176,7 +179,19 @@ class _MyHomePageState extends State<MyHomePage> {
       totals[3] += daily[i].carb;
       print(totals);
     }
+    totals[4] = profile.calories;
+    totals[5] = profile.protein;
+    totals[6] = profile.fat;
+    totals[7] = profile.carb;
     return totals;
+  }
+
+  Future<List<double>> getGoals() async {
+    List<double> goals = [0, 0, 0, 0];
+    
+    
+
+    return goals;
   }
 
   void setCurrentCal () async {
@@ -192,6 +207,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     setCurrentCal();
   }
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -264,9 +281,10 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
                 Text(
-                  " - Overview -",
+                  "- Overview -",
                   style: TextStyle(fontSize: 30, color: Colors.white),
                 ),
+                SizedBox(height: 10),
                 FutureBuilder<List<double>>(
                     future: getTotals(),
                     builder: (context, snapshot) {
@@ -276,10 +294,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           return Column(
                             children: [
                               Stack(alignment: Alignment.center, children: [
-                                Image(
-                                  height: 200,
-                                  image:
-                                      AssetImage("assets/images/calCircle.png"),
+                                SizedBox(
+                                  width: 225,
+                                  height: 225,
+                                  child: CircularProgressIndicator(
+                                    color: Color.fromARGB(255, 222, 107, 0),
+                                    backgroundColor: Color.fromARGB(255, 217, 217, 217),
+                                    value: snapshot.data![0] / snapshot.data![4],
+                                    strokeWidth: 15,
+                                  ),
                                 ),
                                 Column(
                                   children: [
@@ -292,7 +315,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ],
                                 )
                               ]),
-                              Container(height: 25),
+                              Container(height: 40),
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -300,10 +323,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Stack(
                                     alignment: Alignment.center,
                                     children: [
-                                      Image(
-                                        height: 80,
-                                        image: AssetImage(
-                                            "assets/images/proteinCircle.png"),
+                                      SizedBox(
+                                        width: 90,
+                                        height: 90,
+                                        child: CircularProgressIndicator(
+                                          color: Color.fromARGB(255, 244, 67, 54),
+                                          backgroundColor: Color.fromARGB(255, 217, 217, 217),
+                                          value: snapshot.data![1] / snapshot.data![5],
+                                          strokeWidth: 7,
+                                        ),
                                       ),
                                       Column(
                                         children: [
@@ -323,10 +351,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Stack(
                                     alignment: Alignment.center,
                                     children: [
-                                      Image(
-                                        height: 80,
-                                        image: AssetImage(
-                                            "assets/images/fatCircle.png"),
+                                      SizedBox(
+                                        width: 90,
+                                        height: 90,
+                                        child: CircularProgressIndicator(
+                                          color: Color.fromARGB(255, 33, 150, 243),
+                                          backgroundColor: Color.fromARGB(255, 217, 217, 217),
+                                          value: snapshot.data![2] / snapshot.data![6],
+                                          strokeWidth: 7,
+                                        ),
                                       ),
                                       Column(
                                         children: [
@@ -346,10 +379,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                   Stack(
                                     alignment: Alignment.center,
                                     children: [
-                                      Image(
-                                        height: 80,
-                                        image: AssetImage(
-                                            "assets/images/carbCircle.png"),
+                                      SizedBox(
+                                        width: 90,
+                                        height: 90,
+                                        child: CircularProgressIndicator(
+                                          color: Color.fromARGB(255, 255, 235, 59),
+                                          backgroundColor: Color.fromARGB(255, 217, 217, 217),
+                                          value: snapshot.data![3] / snapshot.data![7],
+                                          strokeWidth: 7,
+                                        ),
                                       ),
                                       Column(
                                         children: [
@@ -372,10 +410,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           );
                         }
                       }
-                      return CircularProgressIndicator();
+                      return Column(
+                        children: [
+                          Text(
+                            "Please go to Profile and enter your Information\nto see Overview",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          SizedBox(height: 20,),
+                          CircularProgressIndicator(),
+                        ]
+                      );
                     }),
                 Container(
-                  height: 30,
+                  height: 40,
                 ),
                 FloatingActionButton.extended(
                   label: Text("Add Food"),
