@@ -276,7 +276,7 @@ class _SettingsState extends State<Settings> {
                               onPressed: lockEdit ? () {} : profileWeight.clear,
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
-                            hintText: '0',
+                            hintText: '0 kg',
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                             )),
@@ -307,7 +307,7 @@ class _SettingsState extends State<Settings> {
                               onPressed: lockEdit ? () {} : profileHeight.clear,
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
-                            hintText: '0',
+                            hintText: '0 cm',
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                             )),
@@ -353,7 +353,7 @@ class _SettingsState extends State<Settings> {
                                   lockEdit ? () {} : profileCalories.clear,
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
-                            hintText: '0',
+                            hintText: '0 kcal',
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                             )),
@@ -385,7 +385,7 @@ class _SettingsState extends State<Settings> {
                                   lockEdit ? () {} : profileProteins.clear,
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
-                            hintText: '0',
+                            hintText: '0 g',
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                             )),
@@ -416,7 +416,7 @@ class _SettingsState extends State<Settings> {
                               onPressed: lockEdit ? () {} : profileFats.clear,
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
-                            hintText: '0',
+                            hintText: '0 g',
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                             )),
@@ -447,7 +447,7 @@ class _SettingsState extends State<Settings> {
                               onPressed: lockEdit ? () {} : profileCarbs.clear,
                               icon: lockEdit ? Icon(null) : Icon(Icons.clear),
                             ),
-                            hintText: '0',
+                            hintText: '0 g',
                             hintStyle: const TextStyle(
                               color: Colors.grey,
                             )),
@@ -508,13 +508,14 @@ class _SettingsState extends State<Settings> {
                         );
 
                         bool doesExist = await DatabaseHelper.instance.doesProfileExist();
+                        print("Saving: $doesExist");
                         if(doesExist){
                           await DatabaseHelper.instance.updateProfile(tempProfile);
                           print("Updating");
                           print(await DatabaseHelper.instance.getProfile().toString());
                         } else {
-                          await DatabaseHelper.instance.addProfile(tempProfile);
                           print("Adding");
+                          await DatabaseHelper.instance.addProfile(tempProfile);
                         }
                         setState(() {
                           lockEdit = true;

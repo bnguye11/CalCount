@@ -195,6 +195,7 @@ class DatabaseHelper {
 
   Future<int> addProfile(Profile tempProfile) async {
     Database db = await instance.profileDB;
+    print("DB ADD: ${tempProfile.toString()}");
     return await db.insert("profile", tempProfile.toMap());
   }
 
@@ -211,7 +212,7 @@ class DatabaseHelper {
     List<Profile> profile = proQuery.isNotEmpty ? proQuery.map((c) => Profile.fromMap(c)).toList() : [];
     print("DB EXIST: ${profile.toString()}");
     
-    if(profile.toString().isNotEmpty){
+    if(profile.toString().isEmpty){
       print("DB RETURN TRUE");
       return true;
     } else {
