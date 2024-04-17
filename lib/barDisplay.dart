@@ -1,7 +1,10 @@
+import 'dart:async';
+
+import 'package:calcount/history_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
+import 'package:calcount/databasehelper.dart';
 
 class BarDisplay extends StatefulWidget {
    BarDisplay({Key? key, required this.currentCalorie, required this.weeklyCalories}) : super(key: key);
@@ -19,9 +22,18 @@ class BarDisplay extends StatefulWidget {
 class _BarDisplayState extends State<BarDisplay> {
   final Duration animDuration = const Duration(milliseconds: 250);
   int touchedIndex = -1;
+  var hist = [];
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+    var today = (DateTime.now().weekday) - 1;
+    getHistory(today);
+  }
+
+
+  @override
+  Widget build(BuildContext context) {    
     return AspectRatio(
       aspectRatio: 1,
       child: Stack(
@@ -72,6 +84,13 @@ class _BarDisplayState extends State<BarDisplay> {
       ),
     );
   }
+
+  void getHistory(amount) async {
+    var temphist = await DatabaseHelper.instance.getHistory(amount); 
+    setState(()  {
+      hist = temphist;
+    });
+  } 
 
   BarChartData mainBarData() {
     return BarChartData(
@@ -213,13 +232,20 @@ class _BarDisplayState extends State<BarDisplay> {
     List<BarChartGroupData> bars = [];
     //should return (1 to 7) - 1
     var today = (DateTime.now().weekday) - 1;
-
+    double displayCal = 0;
+    //getting history
+    
     // its not perfect but for now I will only display calories of the current day
     // I guess I could pre populate the table. for now I'll do daily
 
     for (int i = 0; i < 7; i++) {
       bool isToday = (today == i) ? true : false;
-      double tempVal = (isToday) ? widget.currentCalorie : widget.weeklyCalories[i];
+      if(i < today && hist.isNotEmpty) {
+        displayCal = hist[i].calories;
+      } else {
+        displayCal = widget.weeklyCalories[i]; //temp vals
+      }
+      double tempVal = (isToday) ? widget.currentCalorie : displayCal;
       tempVal = (i > today) ? 0 : tempVal;
       var tempBar = makeGroupData(i, tempVal /*this is a dummy value*/, isToday,
           isTouched: i == touchedIndex);

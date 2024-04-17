@@ -1,16 +1,16 @@
 # calcount
 
-A new Flutter project.
+A mobile application used to enable the user to track user’s caloric input by setting custom caloric and
+macro nutrient goals
 
-## Getting Started
+## Authors
+- Brandon Tu
+- Brian Nguyen 
 
-This project is a starting point for a Flutter application.
+## Features
+- Can manually input in the caloric information for the foods you eat so you can easily track them on your phone without having to sign up or pay for anything
+- Can use the scanner to scan the food label instead of typing in the fields manually
+- Calcount will keep track of your caloric intake for the week and display it to you in graph form
+- Allows the user to set custom caloric and macro nutrient goals
+- 
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

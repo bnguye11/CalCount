@@ -208,9 +208,11 @@ class DatabaseHelper {
     return profile.first;
   }
 
+  //we'll just make it return it all for now
   Future<List<History>> getHistory(int amount) async {
     Database db = await instance.historyDB;
-    var hist = await db.rawQuery("SELECT * FROM history ORDER BY timestamp DESC LIMIT ${amount}");
+    var hist = await db.rawQuery("SELECT * FROM history ORDER BY id DESC LIMIT ${amount}");
+    //var hist = await db.query('history',orderBy: 'date');
     List<History> weeklyHistory = hist.isNotEmpty ? hist.map((c) => History.fromMap(c)).toList() : [];
 
     return weeklyHistory;

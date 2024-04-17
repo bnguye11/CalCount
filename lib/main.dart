@@ -126,9 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // print("favoruite food added!");
     var beans = await DatabaseHelper.instance.getFoods('favouriteFoods');
     // print("heres what in here so far");
-    for (var i = 0; i < beans.length; i++) {
+    //for (var i = 0; i < beans.length; i++) {
       // print(beans[i].name);
-    }
+    //}
   }
 
   removeLatest() async {
@@ -202,9 +202,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     setCurrentCal();
+  
   }
 
   
