@@ -1,5 +1,4 @@
 # calcount
-
 A mobile application used to enable the user to track user’s caloric input by setting custom caloric and
 macro nutrient goals
 
@@ -12,5 +11,4 @@ macro nutrient goals
 - Can use the scanner to scan the food label instead of typing in the fields manually
 - Calcount will keep track of your caloric intake for the week and display it to you in graph form
 - Allows the user to set custom caloric and macro nutrient goals
-- 
 
